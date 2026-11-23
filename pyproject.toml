@@ -17,14 +17,14 @@ default-groups = ["dev", "lint"]
 dev = [
     "homeassistant==2026.11.0",
     "home-assistant-frontend==20261028.4",
-    "playwright==1.65.1",
+    "playwright==1.65.2",
     "pre-commit==4.7.0",
     "pytest-cov==7.1.0",
     "pytest-homeassistant==2026.11.0",
     "pyyaml>=6.0",
 ]
 lint = [
-    "ruff==0.17.5",
+    "ruff==0.17.6",
     "mypy==2.4.1",
 ]
 
