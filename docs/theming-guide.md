@@ -2,7 +2,7 @@
 
 Verified against frontend `20261028.4` / Core `2026.11.0`, by reading the shipped theme
 sources and observing the running frontend in Google Chrome. Much of the theming advice
-online predates the 2025–2026 design-token rework; this page describes what the current
+online predates the 2025 and 2026 design-token rework; this page describes what the current
 frontend actually does.
 
 ## The token layers
@@ -32,7 +32,7 @@ components        ha-button, ha-card, dialogs, tiles …
 | Data visualization | `color-1…54`, `energy-*`, `history-*` | Chart, energy dashboard and history colors. |
 | Web Awesome bridge | `wa-*` | Maps HA tokens onto the Web Awesome components the frontend now uses for buttons, dialogs, inputs and tooltips. |
 | Material bridge | `mdc-*`, `md-*` | Maps HA tokens onto the remaining Material components. |
-| Component hooks | `ha-card-*`, `ha-dialog-*`, `ha-tile-*` … | Read by components with a fallback but never declared — set them to customise one component. |
+| Component hooks | `ha-card-*`, `ha-dialog-*`, `ha-tile-*` … | Read by components with a fallback but never declared. Set them to customise one component. |
 
 Full lists with defaults: [tokens-global.md](tokens-global.md) and
 [tokens-components.md](tokens-components.md).
@@ -57,7 +57,7 @@ Consequences for theme authors:
   applied after the dark defaults, so it wins in both modes.
 - **Without a `modes` section, the theme has no dark mode** and the profile's dark-mode
   toggle has no effect on it.
-- **Override the core palette and the semantic layer follows** — in both modes, because the
+- **Override the core palette and the semantic layer follows**, in both modes, because the
   dark semantic defaults reference the same palette steps. This is the highest-leverage
   part of a theme.
 - **Hard-coded application colors do not follow the palette.** `primary-background-color`,
@@ -67,7 +67,7 @@ Consequences for theme authors:
   `rgba(var(--rgb-primary-text-color), 0.6)`-style values. A `var()` or `rgba()` value gets
   no companion.
 - **`primary-color` and the text colors are derived** (`var(--ha-color-primary-40)`,
-  `var(--ha-color-text-primary)`), so they follow the palette — but their `rgb-` companions
+  `var(--ha-color-text-primary)`), so they follow the palette, but their `rgb-` companions
   stay at the stock values. Setting them explicitly as hex keeps both in agreement.
 
 ## Selecting a theme
@@ -83,7 +83,7 @@ Setting `ha-font-family-body` is not enough to change the font everywhere:
 
 - **The page body hard-codes Roboto.** `index.html` declares
   `body { font-family: Roboto, Noto, sans-serif }` as a literal baked in at build time, so
-  everything that inherits from the body — sidebar, header, banners, buttons — ignores the
+  everything that inherits from the body (sidebar, header, banners, buttons) ignores the
   theme. Dashboards and settings cards read the variable and do follow it.
 - **Material components fall back to a literal Roboto.** They read
   `mdc-typography-font-family`, which the frontend never sets.
@@ -161,7 +161,7 @@ uses, truncates exactly what the default theme does.
   modes, so `--indigo-color` and `--deep-purple-color` reach only about 2.5:1 on the dark
   card surface, under the 3:1 expected of icons.
 - **Charts read colors in JavaScript.** `--graph-color-N` is tried first and is unset by
-  default; `--color-N` (1–54, cycled) is the fallback and is also used by calendars and
+  default; `--color-N` (1 to 54, cycled) is the fallback and is also used by calendars and
   maps. The values are parsed as colors in script, so use hex.
 - **The stock chart series are well separated but not mode-aware.** Measured with the
   categorical checks, the eight default series keep adjacent color-vision-deficiency
@@ -181,7 +181,7 @@ only accepts local overrides for custom integrations.
 
 The support module recolors them in the browser: while active, it watches every shadow root for
 `/api/brands/` images, loads each one into a canvas, and recolors it only when every opaque
-pixel is that exact blue, so real logos — multicolored or monochrome in another color — are
+pixel is that exact blue, so real logos, multicolored or monochrome in another color, are
 never touched. The color comes from `--ha-themes-brand-icon-color`; a theme that does not
 set it (the default theme included) gets the original images back.
 
@@ -258,12 +258,12 @@ and the colored icon tiles of Settings (see [Settings icon tiles](#settings-icon
 `ha-border-radius-circle` (50%) and `ha-border-radius-square` (0) are shapes rather than
 sizes and stay, so avatars, round icon buttons, radio buttons and switch thumbs remain
 circles. The frontend's derived radii stay
-positive: the inner card edges subtract 1–2px, the control switch subtracts its 6px padding
+positive: the inner card edges subtract 1 or 2px, the control switch subtracts its 6px padding
 from `ha-border-radius-6xl`, and the Web Awesome checkbox takes the smaller of 37.5 % of its
 size and `wa-border-radius-s`.
 
 Some radii are literals in component styles that no variable reaches, and keep their stock
-shape: the switch tracks (pill), and a few 10px corners that a parent sets on its children —
+shape: the switch tracks (pill), and a few 10px corners that a parent sets on its children:
 the filter chips and the search field of the data table toolbars, one `ha-control-select`.
 `corner_radius: false` keeps the frontend's radii.
 
@@ -277,7 +277,7 @@ Components expose `backdrop-filter` hooks, all unset (`none`) by default:
 | `ha-card-backdrop-filter` | Every `ha-card` | `ha-card-background` (falls back to `card-background-color`) |
 | `ha-dialog-surface-backdrop-filter` | Dialog and bottom-sheet surfaces | `ha-dialog-surface-background` |
 | `ha-dialog-scrim-backdrop-filter` | The page behind a modal (default `brightness(68%)`) | the scrim itself |
-| `ha-bottom-sheet-*-backdrop-filter` | Bottom sheets on mobile; fall back to the dialog hooks | — |
+| `ha-bottom-sheet-*-backdrop-filter` | Bottom sheets on mobile; fall back to the dialog hooks | Same as the dialog hooks |
 
 A blur is only visible through a translucent background, so each hook needs its background
 token set to a color with alpha. Settings pages scroll in a container that starts below

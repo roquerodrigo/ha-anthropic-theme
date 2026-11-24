@@ -325,14 +325,14 @@ the [Home Assistant Marketplace](https://contributors.home-assistant.io/marketpl
   repository sets it only when the device or service exists in specific
   countries, and prefers the list form so adding a country is a one-line diff.
 - Brand assets live under `custom_components/ha_themes/brand/`: `icon.svg` is the
-  source exported from Glass Icons (see README → Brand assets), `icon.png` (256×256)
+  source, built on the Fluent Emoji artist palette (see CONTRIBUTING.md → Brand assets), `icon.png` (256×256)
   and `icon@2x.png` (512×512) are square renders of it, and `logo.png` /
   `dark_logo.png` (256×128) with their `@2x` (512×256) variants put the icon beside the
   "HA Themes" wordmark for light and dark backgrounds, all on a transparent background.
   `tests/test_brand.py` checks the sizes and fails while `icon.svg` is still the placeholder the
   repository started from.
-- A `README.md` at the repo root is required; HACS surfaces it as the
-  integration description. Its header follows the layout below.
+- A `README.md` at the repo root is required; HACS and the Home Assistant Marketplace show
+  it as the integration's page. Its header follows the layout below.
 
 [Release Autopilot](https://github.com/marketplace/actions/release-autopilot) tags a release each time the
 release pull request merges into `main`; HACS surfaces the five most recent
@@ -340,37 +340,39 @@ GitHub releases to users, so keep the changelog grep-able.
 
 ## README header
 
-Every repository opens `README.md` with the same header, in this exact order:
-**title → badges → HACS link → `---` separator → the rest of the document.**
+Every repository opens `README.md` with the same header: the title, then the badges and the
+"Open your Home Assistant instance" button inside the Marketplace exclusion markers, then the
+rest of the document. No `---` separator follows the header.
 
 ```markdown
 # <Title>
 
+<!-- ha-marketplace:exclude-start -->
 [![CI](https://github.com/roquerodrigo/<repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/roquerodrigo/<repo>/actions/workflows/ci.yml)
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![GitHub release](https://img.shields.io/github/v/release/roquerodrigo/<repo>)](https://github.com/roquerodrigo/<repo>/releases/latest)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/roquerodrigo)
 
-[![Open your Home Assistant instance and open the repository inside HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=roquerodrigo&repository=<repo>&category=integration)
-
----
+[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=roquerodrigo&repository=<repo>&category=integration)
+<!-- ha-marketplace:exclude-end -->
 ```
 
 - `owner=` is always `roquerodrigo`; `repository=` is the repository name.
 - `category=integration` for an integration; `category=plugin` for a Lovelace
   card repository.
-- The HACS link is a paragraph of its own, separated from the badge block by a
-  blank line. The badge row and the "Open your Home Assistant instance" button
-  are different things and must not run together.
-- Preserve the badges a repository already carries and invent no new ones; all
-  of them belong **before** the HACS link.
-- The `---` immediately after the HACS link is the header separator. A README
-  that already uses `---` further down keeps those as section breaks — do not
-  add a second separator to the header.
+- The button uses the `marketplace_repository` redirect because `hacs.json` requires Home
+  Assistant 2026.11 or later. A repository that supports older versions uses the
+  `hacs_repository` redirect, which opens HACS before 2026.11 and the Marketplace from then on.
+- The Home Assistant Marketplace leaves out everything between
+  `<!-- ha-marketplace:exclude-start -->` and `<!-- ha-marketplace:exclude-end -->`, and
+  GitHub hides the markers. Installation, Contributing and License sit inside them too.
+- Headings get no ids in the Marketplace, so visible text never depends on an in-page
+  `#anchor` link.
 
 **A private repository gets no HACS link.** `my.home-assistant.io` resolves the
 target through the public GitHub API, so on a private repository the button
 lands on something HACS cannot install. It is the same reason the catalog checks
-skip those repositories. Ship the title, the badges and
-the separator, and add the link when — and only when — the repository is made
+skip those repositories. Ship the title and the badges,
+and add the link when — and only when — the repository is made
 public.
 
 ## Quality scale

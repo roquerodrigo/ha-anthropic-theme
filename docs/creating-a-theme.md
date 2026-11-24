@@ -30,16 +30,16 @@ Every theme built here follows these defaults, so a new theme gets them for free
   invalid value, as the bottom line did, and fades on a disabled field. Buttons, chips,
   switches and checkboxes are untouched. A theme opts out with `field_outline: false`.
 - **One small corner radius.** Every step of the frontend's radius scale (`sm` through
-  `6xl` and `pill`) and every component hook that bridges it — cards, dialogs and bottom
-  sheets, buttons, badges, chips, tile icons, tooltips, menus, toasts, fields — take the
+  `6xl` and `pill`) and every component hook that bridges it (cards, dialogs and bottom
+  sheets, buttons, badges, chips, tile icons, tooltips, menus, toasts, fields) take the
   same `corner_radius` (`8px`), so the corner no longer grows with the size of the element.
   The colored icon tiles of Settings, System, About, the restart dialog and the search
   dialog take it too, through the support module, so they match the entity tile icons.
   Other circles (`ha-border-radius-circle`: avatars, round icon buttons, radio buttons, switch
   thumbs) stay round (see [the guide](theming-guide.md#corner-radius)). A theme sets another
   length, or keeps the frontend's radii with `corner_radius: false`.
-- **A harmonized entity palette.** The frontend's named colors — which every entity state
-  color references — keep their hue and meaning but are restyled per mode: chroma capped to
+- **A harmonized entity palette.** The frontend's named colors, which every entity state
+  color references, keep their hue and meaning but are restyled per mode: chroma capped to
   the theme's mood and lightness rescaled into a band that reads on that mode's surfaces.
   Energy and weather-icon colors follow them.
 - **Generic integration icons in the primary color.** The flat blue icons of core
@@ -138,7 +138,7 @@ tokens:                        # optional raw tokens, applied last and validated
 (`ha-color-<family>-<step>`); `red`, `orange` and `green` are the danger, warning and success
 families of the semantic layer. Seeds sit at step 50. The generator is a port of the
 frontend's own `generateColorPalette` and produces identical values, but its darkest steps
-drift towards black and, for warm seeds, towards red — hand-tune `05`–`30` of `red`,
+drift towards black and, for warm seeds, towards red. Hand-tune `05` to `30` of `red`,
 `orange` and `green` when the theme has a dark mode. Dark mode paints the status fills from
 those steps (`05` quiet, `10` normal, `20` hover, `30` loud hover): keep `05` at least as
 light as the dark `background`, keep each family's hue, and let the build's status fill
@@ -184,8 +184,8 @@ syntax_keyword: "{primary.30}" # → #9c4a2e
 ```
 
 Family names are lowercase letters joined by hyphens (`light-blue`), steps are the two-digit
-steps of the scale (`05` … `95`) and alpha is a number from 0 to 1. Any other text in braces —
-`{primary.5}`, `{neutral.05@12%}`, an unknown family or step — fails the build with the theme,
+steps of the scale (`05` … `95`) and alpha is a number from 0 to 1. Any other text in braces
+(`{primary.5}`, `{neutral.05@12%}`, an unknown family or step) fails the build with the theme,
 section and value named.
 
 ### Roles
@@ -222,15 +222,15 @@ section and value named.
 | `syntax_variable` | `codemirror-variable`, `-variable-2`, `-qualifier`, `-meta` | `{neutral.20}` | `{neutral.80}` |
 | `syntax_punctuation` | `codemirror-def`, `-operator` (brackets, delimiters, colons, operators) | `{neutral.40}` | `{neutral.70}` |
 | `sidebar_background` / `header_background` | `sidebar-background-color` / `app-header-background-color` | `background` | `background` |
-| `sidebar_text` / `sidebar_selected` / `header_text` | `sidebar-text-color` / `sidebar-selected-icon-color` (the selected item's icon and label) / `app-header-text-color` | — | — |
-| `state_active` | `state-active-color` | — | — |
+| `sidebar_text` / `sidebar_selected` / `header_text` | `sidebar-text-color` / `sidebar-selected-icon-color` (the selected item's icon and label) / `app-header-text-color` | not set | not set |
+| `state_active` | `state-active-color` | not set | not set |
 
-Roles marked — are only written when set; otherwise the frontend's derived default applies.
+Roles marked "not set" are only written when a theme sets them; otherwise the frontend's derived default applies.
 
 Every token a role writes has a reader: the build fails on a role token that the frontend never
 reads (catalog `consumers` of 0) or, for `ha-themes-*` tokens, that the support module never
-reads. The frontend's default theme declares several tokens nothing reads —
-`ha-color-text-link`, `ha-color-text-disabled`, `darker-primary-color`, `outline-hover-color` —
+reads. The frontend's default theme declares several tokens nothing reads
+(`ha-color-text-link`, `ha-color-text-disabled`, `darker-primary-color`, `outline-hover-color`),
 so there is no `link` role: links are drawn in `primary-color`, the `primary` role. Since
 `primary` is also the brand fill of buttons, badges and switches, the builder never moves it and
 validation holds it to the 3:1 of a graphical part; check its link contrast by eye. Anthropic
@@ -253,7 +253,7 @@ background. Raw `tokens` still override all of these.
 
 `card-background-color` follows `background`, not `surface`. Despite its name, it is a
 page-plane color by design: the frontend paints it on elements that sit directly on the
-page — data tables and their headers, the logbook's floating date — so a surface tone would
+page (data tables and their headers, the logbook's floating date), so a surface tone would
 show up there as a stripe. Raised elements have hooks of their own, which the builder points
 at `surface`: cards read `ha-card-background`, dialogs `ha-dialog-surface-background`, and
 pickers and popovers the global `wa-color-surface-default` and `mdc-theme-surface`.
@@ -315,7 +315,7 @@ pass the categorical checks in both modes: lightness band, chroma floor, adjacen
 color-vision-deficiency separation (protanopia and deuteranopia simulated with Machado
 2009, OKLab ΔE ≥ 6, target 8) and adjacent normal-vision separation (ΔE ≥ 15). Colors
 under 3:1 against the card surface are reported but allowed: every chart has a legend and
-tooltips. Slots 9–54 repeat the eight hues at lighter and darker steps; past eight series
+tooltips. Slots 9 to 54 repeat the eight hues at lighter and darker steps; past eight series
 identity is no longer guaranteed, so prefer fewer series per chart.
 
 The order matters as much as the hues. `scripts/ha-themes palette <slug>` ranks the orders that
@@ -376,8 +376,8 @@ the same floor as the role, and text on a card is measured on the card's translu
 composited over the page. The `scrollbar` check likewise reads `scrollbar-thumb-color`. The
 semantic, loud fill and toast checks already read the built tokens.
 
-Raw tokens outside the roles and the semantic layer — card border color and width, radii, focus
-rings, font sizes — are only checked for existence. A theme far from Anthropic, such as the
+Raw tokens outside the roles and the semantic layer (card border color and width, radii, focus
+rings, font sizes) are only checked for existence. A theme far from Anthropic, such as the
 high-contrast, cold blue test fixture in `toolkit/tests/fixtures/high-contrast-glacier.yaml`
 (pure black and white planes, opaque borders through `divider` and raw card border tokens,
 hand-tuned dark status steps, a pinned entity blue), is expressed with roles, palette steps and
@@ -390,4 +390,4 @@ hand-tuned dark status steps, a pinned entity blue), is expressed with roles, pa
 `scripts/ha-themes build` writes every theme family into
 `custom_components/ha_themes/themes/<slug>.yaml` and regenerates the support module in
 `custom_components/ha_themes/frontend/`. Commit both with the source change; the
-integration installs them on the next update (see the README for installation).
+integration installs them the first time Home Assistant starts after the update.

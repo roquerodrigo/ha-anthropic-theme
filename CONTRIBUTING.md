@@ -1,72 +1,97 @@
-# Contribution guidelines
+# Contributing
 
-Contributing to this project should be as easy and transparent as possible, whether it's:
+Bug reports, ideas and pull requests are welcome.
 
-- Reporting a bug
-- Discussing the current state of the code
-- Submitting a fix
-- Proposing new features
+## Reporting a bug
 
-## Github is used for everything
+Open an [issue](https://github.com/roquerodrigo/ha-themes/issues/new/choose) with:
 
-Github is used to host code, to track issues and feature requests, as well as accept pull requests.
+- the Home Assistant version, the integration version, the browser and whether the problem shows in light mode, dark mode or both;
+- what you did, what you expected and what happened, with a screenshot when the problem is visual;
+- the diagnostics downloaded from the integration's menu and the relevant log lines.
 
-Pull requests are the best way to propose changes to the codebase.
+## Project layout
 
-1. Fork the repo and create your branch from `main`.
-2. If you've changed something, update the documentation.
-3. Make sure `scripts/lint` passes: it runs the format check, lint, type check and tests, as CI does.
-4. Test your contribution against the local Home Assistant instance.
-5. Issue that pull request!
+| Path | What it is |
+| --- | --- |
+| [`custom_components/ha_themes/`](custom_components/ha_themes) | The integration. `themes/` and `frontend/` inside it are generated. |
+| [`themes-src/`](themes-src) | Theme definitions. |
+| [`toolkit/`](toolkit) | Token capture, reference docs, palette tools and the theme builder. Not shipped. |
+| [`catalog/tokens.json`](catalog/tokens.json) | The token catalog the builder validates against (generated). |
+| [`docs/`](docs) | The theming guide, the theme definition reference and the generated token references. |
+| [`dev/`](dev) | Configuration of the development instance, with demo entities and the Theme Lab dashboard. |
+| [`previews/`](previews) | Palette sheets and screenshots of every theme in both modes (generated). |
 
-## Any contributions you make will be under the MIT Software License
+Generated files are never edited by hand. Change the source, rebuild and commit the output with it.
 
-In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
+## Development setup
 
-## Report bugs using Github's [issues](../../issues)
-
-GitHub issues are used to track public bugs.
-Report a bug by [opening a new issue](../../issues/new/choose); it's that easy!
-
-## Write bug reports with detail, background, and sample code
-
-**Great Bug Reports** tend to have:
-
-- A quick summary and/or background
-- Steps to reproduce
-  - Be specific!
-  - Give sample code if you can.
-- What you expected would happen
-- What actually happens
-- Notes (possibly including why you think this might be happening, or stuff you tried that didn't work)
-
-## Use a Consistent Coding Style
-
-The integration is checked with every [ruff](https://docs.astral.sh/ruff/) rule and a strict
-[mypy](https://mypy-lang.org/) configuration (both in `pyproject.toml`; the dev tooling under `toolkit/` has lighter rules in
-`toolkit/ruff.toml`), and the tests must keep coverage at 90 % or more. See
-[`CODE_STYLE.md`](CODE_STYLE.md) for the conventions. Run `scripts/lint` before sending a PR.
-
-## Test your code modification
-
-Requires Python 3.14, [uv](https://docs.astral.sh/uv/) and Google Chrome. The full workflow is in
-the [Development](README.md#development) section of the README.
+You need Python 3.14, [uv](https://docs.astral.sh/uv/) and Google Chrome (the token capture and the previews drive it through Playwright).
 
 ```bash
-scripts/setup                      # install the development environment
-scripts/dev-server                 # local Home Assistant on :8123 running the integration
-scripts/ha-themes onboard          # first run only: test user + the integration
+scripts/setup              # install the dependencies into .venv
+scripts/dev-server         # run Home Assistant at http://localhost:8123 with this integration loaded
+scripts/ha-themes onboard  # first run only: create the test user and add the integration
 ```
 
-The dev server runs Home Assistant with [`dev/config/configuration.yaml`](dev/config/configuration.yaml)
-and mirrors `custom_components/ha_themes` into the dev configuration on every start.
+`scripts/dev-server` runs Home Assistant with [`dev/config/`](dev/config) and copies `custom_components/ha_themes` into it on every start. After a build, restart Home Assistant (from the UI or by restarting `scripts/dev-server`) to see the change. Reloading the integration is not enough: it reinstalls the copy made at the last start.
 
-Themes are defined in `themes-src/`; `themes/` and `frontend/` inside
-`custom_components/ha_themes/` are generated, so never edit them by hand. After changing a theme,
-its roles or palettes, the builder or the support module, run `scripts/ha-themes build --strict`,
-commit the regenerated files and restart the dev server to see the change. Check visual changes
-in Google Chrome in light and dark mode.
+## Toolkit commands
+
+| Command | What it does |
+| --- | --- |
+| `scripts/ha-themes build [slug…] [--strict] [--verbose]` | Build `themes-src/` into the integration and validate every theme |
+| `scripts/ha-themes preview [slug…] [--palette-only]` | Render the palette sheets and screenshot the themes in Google Chrome |
+| `scripts/ha-themes palette [slug…]` | Rank the chart series orders that pass the checks, and list the entity colors |
+| `scripts/ha-themes catalog` | Capture the token catalog from the development instance and regenerate the reference docs |
+| `scripts/ha-themes docs` | Regenerate the reference docs from `catalog/tokens.json` |
+
+To create or change a theme, follow [docs/creating-a-theme.md](docs/creating-a-theme.md). [docs/theming-guide.md](docs/theming-guide.md) explains how the current frontend applies themes and which parts the support module covers.
+
+After changing a theme, its roles or palettes, the builder or the support module, run `scripts/ha-themes build --strict`, commit the regenerated files and check the result in Google Chrome in light and dark mode. Regenerate `previews/` with `scripts/ha-themes preview` when the change is visual.
+
+## Checks
+
+Run these before opening a pull request. CI runs the same ones, and `pre-commit install` runs the first three on every commit.
+
+```bash
+uv run ruff format .       # format
+uv run ruff check . --fix  # lint
+uv run mypy                # type-check the integration
+uv run pytest              # tests, coverage of the integration must stay at 90 % or more
+```
+
+`scripts/lint` runs the same four in check mode, as CI does. The toolkit has lighter lint rules in `toolkit/ruff.toml`, and its tests do not count toward the coverage gate. To run them alone, use `uv run pytest toolkit/tests --no-cov`. `toolkit/tests/test_generated_files.py` fails when the committed themes or support module are out of date with their sources.
+
+Read [CODE_STYLE.md](CODE_STYLE.md) before adding or restructuring code.
+
+## Updating to a new Home Assistant release
+
+1. Bump `homeassistant`, `home-assistant-frontend` and `pytest-homeassistant` (released with the same version as Home Assistant) in `pyproject.toml`, and `homeassistant` in `hacs.json`, then run `uv sync`. Dependabot ignores these three packages. pytest and pytest-asyncio are not pinned here because `pytest-homeassistant` pins them. `toolkit/tests/test_pinned_versions.py` fails until the catalog is captured again.
+2. Restart `scripts/dev-server` and run `scripts/ha-themes catalog`.
+3. Review the diff of `catalog/tokens.json` and of the generated docs: new, removed and changed tokens, and the list of broken references.
+4. Run `scripts/ha-themes build --strict`. Unknown tokens point at themes that need updating.
+5. Review what is kept by hand against the new frontend: `UPSTREAM_FIXES` in `toolkit/ha_theme_kit/theme/roles.py` (drop fixes the frontend no longer needs), `FRONTEND_SERIES` in `chart_palette.py`, `FRONTEND_NAMED_HUES` in `entity_palette.py`, `FRONTEND_LAYERING` in `neutral_layers.py`, `ICON_TILE_ENTITY_COLORS` and the stock radii, selectors and fill tokens of the form field stylesheets in `toolkit/ha_theme_kit/support/ha-themes.js`, and the version header and known issues table of `docs/theming-guide.md`. Run `scripts/lint`: tests fail while these disagree with the new catalog.
+6. Regenerate the previews and compare them with the previous ones.
+
+## How the catalog is captured
+
+- Runtime: Playwright drives the installed Google Chrome with an isolated profile. In light and dark mode it reads every custom property declared on `html` in the document and in adopted stylesheets, the inline values the theme engine sets, and their computed values.
+- Bundle scan: every chunk of the installed frontend package is scanned for `var(--token, fallback)` references, script reads and names built at runtime. This yields how widely each token is used and the component hooks that are never declared globally.
+
+## Brand assets
+
+`custom_components/ha_themes/brand/` holds the icon Home Assistant shows for the integration: the "artist palette" emoji from [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (© Microsoft Corporation, [MIT license](https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE)) on a white rounded tile with a faint edge. `icon.svg` is the source. `icon.png` and `icon@2x.png` are square renders of it, and `logo.png` and `dark_logo.png` (with `@2x` variants) put the icon beside the "HA Themes" wordmark for light and dark backgrounds. Render the PNGs from `icon.svg` in Google Chrome on a transparent background, at the sizes `tests/test_brand.py` checks.
+
+## Pull requests
+
+1. Fork the repository and branch from `main`.
+2. Write the pull request title and commit messages as [Conventional Commits](https://www.conventionalcommits.org/). Releases and their notes are generated from them. Mark breaking changes with `!` or a `BREAKING CHANGE:` footer.
+3. Leave the version in `manifest.json`, `pyproject.toml` and `uv.lock` alone. The release pull request bumps it.
+4. Update `translations/en.json` and `translations/pt-BR.json` together when you change user-facing strings.
+5. Update the README when what users see or do changes.
+6. Fill in the pull request template.
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under its MIT License.
+Contributions are released under the project's [MIT License](LICENSE).
