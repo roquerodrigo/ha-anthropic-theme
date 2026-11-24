@@ -6,9 +6,9 @@ Guidance for Claude Code (claude.ai/code) agents working in this repository.
 
 Before creating, renaming or restructuring any file/class/function, **read
 [`CODE_STYLE.md`](./CODE_STYLE.md)**. It is the single source of truth for conventions of the
-integration and the toolkit, and maps the integration's modules. For what the project does and
-the commands, see
-[`README.md`](./README.md).
+integration and the toolkit, and maps the integration's modules. For what the project does, see
+[`README.md`](./README.md); for the development commands, see
+[`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## Two halves
 
@@ -49,7 +49,7 @@ the last tested theme selected and dark mode on automatic.
 Pinned in four places that must move together: `homeassistant`,
 `home-assistant-frontend` and `pytest-homeassistant` (released by Home Assistant core with
 the same version number) in `pyproject.toml`, and `homeassistant` in `hacs.json`. Then re-capture the catalog and review the frontend copies
-kept by hand (README → Updating to a new Home Assistant release). Dependabot ignores the
+kept by hand (CONTRIBUTING.md → Updating to a new Home Assistant release). Dependabot ignores the
 three packages, and `toolkit/tests/test_pinned_versions.py` fails while any of the four
 pins or `catalog/tokens.json` disagree with the installed packages. pytest and pytest-asyncio
 come exact-pinned from `pytest-homeassistant`; do not pin them again in `pyproject.toml`.
