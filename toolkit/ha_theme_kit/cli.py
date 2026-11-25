@@ -281,12 +281,12 @@ def command_onboard(_arguments: argparse.Namespace) -> int:
     from ha_theme_kit.inventory.dev_onboarding import onboard
 
     instance = onboard()
-    print(f"onboarded {instance.url} as {instance.username}; ha_themes added")
+    print(f"onboarded {instance.url} as {instance.username}; ha_anthropic_theme added")
     return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="ha-themes")
+    parser = argparse.ArgumentParser(prog="ha-anthropic-theme")
     commands = parser.add_subparsers(required=True)
 
     catalog = commands.add_parser(

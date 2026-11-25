@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResultType
 
-from custom_components.ha_themes.const import DOMAIN
+from custom_components.ha_anthropic_theme.const import DOMAIN
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -22,7 +22,7 @@ async def test_user_step_creates_the_entry(hass: HomeAssistant, frontend: None) 
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {})
     await hass.async_block_till_done()
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert result["title"] == "HA Themes"
+    assert result["title"] == "Anthropic Theme"
     assert result["data"] == {}
 
 

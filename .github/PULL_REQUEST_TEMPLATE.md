@@ -14,11 +14,11 @@
 ## Test plan
 
 - [ ] `scripts/lint` passes (format check, lint, type check and tests with the 90 % coverage gate)
-- [ ] `scripts/ha-themes build --strict` ran without errors (if themes, roles, palettes, the builder or the support module changed)
-- [ ] The regenerated files under `custom_components/ha_themes/` (`themes/*.yaml`, `frontend/ha-themes.js`) are committed and were not edited by hand
+- [ ] `scripts/ha-anthropic-theme build --strict` ran without errors (if themes, roles, palettes, the builder or the support module changed)
+- [ ] The regenerated files under `custom_components/ha_anthropic_theme/` (`themes/*.yaml`, `frontend/ha-anthropic-theme.js`) are committed and were not edited by hand
 - [ ] Checked in Google Chrome in light and dark mode against the local Home Assistant instance (if the change is visual)
-- [ ] `previews/` regenerated with `scripts/ha-themes preview` (if the change is visual)
-- [ ] Reference docs regenerated with `scripts/ha-themes docs` (if the token catalog or the docs generator changed)
+- [ ] `previews/` regenerated with `scripts/ha-anthropic-theme preview` (if the change is visual)
+- [ ] Reference docs regenerated with `scripts/ha-anthropic-theme docs` (if the token catalog or the docs generator changed)
 
 ## Checklist
 

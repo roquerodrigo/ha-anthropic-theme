@@ -1,13 +1,13 @@
-const PROJECT_VARIABLE_PREFIX = "--ha-themes-";
-const FONT_STYLESHEET_VARIABLE = "--ha-themes-font-stylesheet";
+const PROJECT_VARIABLE_PREFIX = "--ha-anthropic-theme-";
+const FONT_STYLESHEET_VARIABLE = "--ha-anthropic-theme-font-stylesheet";
 const BRAND_PATH = "/api/brands/";
-const BRAND_ICON_COLOR_VARIABLE = "--ha-themes-brand-icon-color";
+const BRAND_ICON_COLOR_VARIABLE = "--ha-anthropic-theme-brand-icon-color";
 const BRAND_ICON_COLOR_DECLARATION = new RegExp(`${BRAND_ICON_COLOR_VARIABLE}\\s*:\\s*([^;]*)`);
 // Generic integration icons on the brands CDN are a single flat color; real logos are not.
 const GENERIC_ICON_RGB = [0, 171, 248];
 const CHANNEL_TOLERANCE = 3;
 const DASHBOARD_HEADER_BACKGROUND =
-  "var(--ha-themes-dashboard-header-background, var(--app-header-background-color))";
+  "var(--ha-anthropic-theme-dashboard-header-background, var(--app-header-background-color))";
 
 // Only the dashboard header pairs its background with a backdrop filter, so the translucent
 // background is painted there alone; the frontend's edit-mode rules are more specific and win.
@@ -28,7 +28,7 @@ const dropdownMenuStyles = new CSSStyleSheet();
 dropdownMenuStyles.replaceSync(`
   :host {
     --wa-color-surface-raised: var(
-      --ha-themes-menu-background,
+      --ha-anthropic-theme-menu-background,
       var(--card-background-color, var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)))
     );
   }
@@ -41,14 +41,14 @@ dropdownMenuStyles.replaceSync(`
 const toastStyles = new CSSStyleSheet();
 toastStyles.replaceSync(`
   .toast {
-    box-shadow: var(--ha-themes-toast-box-shadow, var(--wa-shadow-l));
-    --ha-themes-page-brand-on-normal: var(--wa-color-brand-on-normal);
+    box-shadow: var(--ha-anthropic-theme-toast-box-shadow, var(--wa-shadow-l));
+    --ha-anthropic-theme-page-brand-on-normal: var(--wa-color-brand-on-normal);
   }
   .toast,
-  .actions { color: var(--ha-themes-toast-text-color, var(--ha-color-on-neutral-loud)); }
+  .actions { color: var(--ha-anthropic-theme-toast-text-color, var(--ha-color-on-neutral-loud)); }
   .actions {
     --wa-color-brand-on-normal: var(
-      --ha-themes-toast-action-color, var(--ha-themes-page-brand-on-normal)
+      --ha-anthropic-theme-toast-action-color, var(--ha-anthropic-theme-page-brand-on-normal)
     );
   }
 `);
@@ -59,10 +59,10 @@ toastStyles.replaceSync(`
 // own inherited value.
 const mapOverviewStyles = new CSSStyleSheet();
 mapOverviewStyles.replaceSync(`
-  :host { --ha-themes-page-card-background: var(--card-background-color); }
+  :host { --ha-anthropic-theme-page-card-background: var(--card-background-color); }
   .panel {
     --card-background-color: var(
-      --ha-themes-menu-background, var(--ha-themes-page-card-background)
+      --ha-anthropic-theme-menu-background, var(--ha-anthropic-theme-page-card-background)
     );
   }
 `);
@@ -143,9 +143,9 @@ const iconTileRule = ([hex, entityColor]) => `
   [style*="${hex}" i], [style*="${serializedRgb(hex)}"] {
     background-color: oklch(
       from color-mix(
-        in oklab, ${hex}, var(--${entityColor}-color) var(--ha-themes-icon-tile-palette-share, 0%)
+        in oklab, ${hex}, var(--${entityColor}-color) var(--ha-anthropic-theme-icon-tile-palette-share, 0%)
       )
-      min(l, var(--ha-themes-icon-tile-max-lightness, 1)) c h
+      min(l, var(--ha-anthropic-theme-icon-tile-max-lightness, 1)) c h
     ) !important;
   }`;
 
@@ -163,24 +163,24 @@ const iconTileShapeStyles = new CSSStyleSheet();
 iconTileShapeStyles.replaceSync(`
   .icon-background,
   [slot="start"][style*="border-radius: var(--ha-border-radius-circle)"][style*="background-color"] {
-    border-radius: var(--ha-themes-corner-radius, var(--ha-border-radius-circle)) !important;
+    border-radius: var(--ha-anthropic-theme-corner-radius, var(--ha-border-radius-circle)) !important;
   }
 `);
 
 // Filled form fields mark their edge, focus and errors with a bottom line drawn by an ::after
-// rule. A theme that sets --ha-themes-field-outline to 1 outlines the whole field instead, the
+// rule. A theme that sets --ha-anthropic-theme-field-outline to 1 outlines the whole field instead, the
 // outline takes over the focus and error colors and the fill clears; at the default 0 every rule
 // resolves to the stock look.
-const FIELD_OUTLINE = "var(--ha-themes-field-outline, 0)";
-const FIELD_BORDER = `calc(${FIELD_OUTLINE} * 1px) solid var(--ha-themes-field-border-color, transparent)`;
+const FIELD_OUTLINE = "var(--ha-anthropic-theme-field-outline, 0)";
+const FIELD_BORDER = `calc(${FIELD_OUTLINE} * 1px) solid var(--ha-anthropic-theme-field-border-color, transparent)`;
 const FIELD_UNDERLINE_OPACITY = `calc(1 - ${FIELD_OUTLINE})`;
 const FIELD_HOVER_BORDER_COLOR = "var(--ha-color-border-neutral-normal)";
 const FIELD_FOCUS_BORDER_COLOR = "var(--primary-color)";
 const FIELD_INVALID_BORDER_COLOR = "var(--ha-color-border-danger-normal)";
 const FIELD_DISABLED_BORDER_COLOR =
-  "color-mix(in srgb, var(--ha-themes-field-border-color, transparent) 50%, transparent)";
+  "color-mix(in srgb, var(--ha-anthropic-theme-field-border-color, transparent) 50%, transparent)";
 const fieldBorderRadius = (stockTop, stockBottom = "var(--ha-border-radius-square)") =>
-  `var(--ha-themes-field-border-radius, ${stockTop} ${stockTop} ${stockBottom} ${stockBottom})`;
+  `var(--ha-anthropic-theme-field-border-radius, ${stockTop} ${stockTop} ${stockBottom} ${stockBottom})`;
 const STOCK_FIELD_RADIUS = fieldBorderRadius("var(--ha-border-radius-sm)");
 const stockFieldColor = (variable) =>
   `color-mix(in srgb, var(${variable}) calc(${FIELD_UNDERLINE_OPACITY} * 100%), transparent)`;
@@ -193,7 +193,7 @@ const FORM_FILL_TOKENS = [
   "--ha-color-form-background-hover",
   "--ha-color-form-background-disabled",
 ];
-const stockFormFill = (token) => token.replace("--ha-color-", "--ha-themes-stock-");
+const stockFormFill = (token) => token.replace("--ha-color-", "--ha-anthropic-theme-stock-");
 const declarations = (declaration) => FORM_FILL_TOKENS.map(declaration).join(" ");
 const STOCK_FORM_FILLS = `:host {
   ${declarations((token) => `${stockFormFill(token)}: var(${token});`)}
@@ -251,7 +251,7 @@ textareaFieldStyles.replaceSync(`
 
 // Selects and pickers wrap their list item, clear button and arrow in one field, which dims
 // itself when disabled and tints itself on hover with a ripple.
-const STOCK_HOVER_RIPPLE = "--ha-themes-stock-ripple-hover-color";
+const STOCK_HOVER_RIPPLE = "--ha-anthropic-theme-stock-ripple-hover-color";
 const pickerFieldStyles = new CSSStyleSheet();
 pickerFieldStyles.replaceSync(`
   ${STOCK_FORM_FILLS}
@@ -281,7 +281,7 @@ labelsFieldStyles.replaceSync(`
     background-color: ${stockFieldColor("--mdc-text-field-fill-color")};
     border: ${FIELD_BORDER};
     border-bottom: 1px solid var(
-      --ha-themes-field-border-color, var(--ha-color-border-neutral-normal)
+      --ha-anthropic-theme-field-border-color, var(--ha-color-border-neutral-normal)
     );
     border-radius: ${fieldBorderRadius("var(--ha-border-radius-sm)", "0")};
   }
@@ -316,7 +316,7 @@ timeFieldStyles.replaceSync(`
 // The input chip locks its pill shape on its own host, out of reach of the theme's radius.
 const inputChipStyles = new CSSStyleSheet();
 inputChipStyles.replaceSync(`
-  :host { --ha-button-border-radius: var(--ha-themes-corner-radius, 16px); }
+  :host { --ha-button-border-radius: var(--ha-anthropic-theme-corner-radius, 16px); }
 `);
 
 const hostStyles = new Map([
@@ -356,15 +356,15 @@ const declaresProjectTheme = (element) =>
   element.getAttribute("style")?.includes(PROJECT_VARIABLE_PREFIX) ?? false;
 
 const syncBodyFontBinding = () => {
-  const binding = document.head.querySelector("style[data-ha-themes]");
+  const binding = document.head.querySelector("style[data-ha-anthropic-theme]");
   if (!declaresProjectTheme(document.documentElement)) {
     binding?.remove();
   } else if (!binding) {
     const style = document.createElement("style");
-    style.dataset.haThemes = "";
+    style.dataset.haAnthropicTheme = "";
     style.textContent =
       "body { font-family: var(--ha-font-family-body); " +
-      "font-size-adjust: var(--ha-themes-font-size-adjust, none); }";
+      "font-size-adjust: var(--ha-anthropic-theme-font-size-adjust, none); }";
     document.head.append(style);
   }
 };
@@ -390,8 +390,8 @@ const syncFontStylesheets = () => {
       fontStylesheetDeclarers.delete(element);
     }
   }
-  for (const link of document.head.querySelectorAll("link[data-ha-themes-font-stylesheet]")) {
-    if (!needed.delete(link.dataset.haThemesFontStylesheet)) {
+  for (const link of document.head.querySelectorAll("link[data-ha-anthropic-theme-font-stylesheet]")) {
+    if (!needed.delete(link.dataset.haAnthropicThemeFontStylesheet)) {
       link.remove();
     }
   }
@@ -399,7 +399,7 @@ const syncFontStylesheets = () => {
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = href;
-    link.dataset.haThemesFontStylesheet = href;
+    link.dataset.haAnthropicThemeFontStylesheet = href;
     document.head.append(link);
   }
 };
@@ -510,10 +510,10 @@ const backgroundBrandUrl = (element) =>
   element.style.backgroundImage.match(/url\(["']?([^"')]*\/api\/brands\/[^"')]*)["']?\)/)?.[1];
 
 const forget = (element) => {
-  delete element.dataset.haThemesSrc;
-  delete element.dataset.haThemesSrcset;
-  delete element.dataset.haThemesBackground;
-  delete element.dataset.haThemesApplied;
+  delete element.dataset.haAnthropicThemeSrc;
+  delete element.dataset.haAnthropicThemeSrcset;
+  delete element.dataset.haAnthropicThemeBackground;
+  delete element.dataset.haAnthropicThemeApplied;
 };
 
 const displayedValue = (element) =>
@@ -521,25 +521,25 @@ const displayedValue = (element) =>
 
 const storedSource = (element) =>
   element instanceof HTMLImageElement
-    ? element.dataset.haThemesSrc
-    : element.dataset.haThemesBackground;
+    ? element.dataset.haAnthropicThemeSrc
+    : element.dataset.haAnthropicThemeBackground;
 
 const originalSource = (element) => {
   if (element instanceof HTMLImageElement) {
     if (element.src.includes(BRAND_PATH)) {
-      element.dataset.haThemesSrc = element.src;
-      element.dataset.haThemesSrcset = element.srcset;
+      element.dataset.haAnthropicThemeSrc = element.src;
+      element.dataset.haAnthropicThemeSrcset = element.srcset;
       return element.src;
     }
   } else {
     const url = backgroundBrandUrl(element);
     if (url) {
-      element.dataset.haThemesBackground = url;
+      element.dataset.haAnthropicThemeBackground = url;
       return url;
     }
   }
   // The frontend replaced or cleared the image: it no longer shows a brand icon.
-  if (displayedValue(element) !== element.dataset.haThemesApplied) {
+  if (displayedValue(element) !== element.dataset.haAnthropicThemeApplied) {
     forget(element);
     return undefined;
   }
@@ -559,7 +559,7 @@ const applyTo = async (element) => {
   if (element instanceof HTMLImageElement) {
     const target = replacement || source;
     if (element.src !== target) {
-      element.srcset = replacement ? "" : element.dataset.haThemesSrcset || "";
+      element.srcset = replacement ? "" : element.dataset.haAnthropicThemeSrcset || "";
       element.src = target;
     }
   } else {
@@ -568,13 +568,13 @@ const applyTo = async (element) => {
       element.style.backgroundImage = target;
     }
   }
-  element.dataset.haThemesApplied = displayedValue(element);
+  element.dataset.haAnthropicThemeApplied = displayedValue(element);
 };
 
 const isBrandElement = (element) =>
   (element instanceof HTMLImageElement &&
-    (element.src.includes(BRAND_PATH) || element.dataset.haThemesSrc)) ||
-  element.dataset?.haThemesBackground ||
+    (element.src.includes(BRAND_PATH) || element.dataset.haAnthropicThemeSrc)) ||
+  element.dataset?.haAnthropicThemeBackground ||
   element.style?.backgroundImage.includes(BRAND_PATH);
 
 const scan = (root) => {
@@ -774,7 +774,7 @@ CSSStyleDeclaration.prototype.setProperty = function setProperty(name, value, ..
 const CHART_ELEMENT = "ha-chart-base";
 const patchChartTheme = (chartClass) => {
   const createTheme = chartClass?.prototype._createTheme;
-  if (typeof createTheme !== "function" || createTheme.haThemesPatched) {
+  if (typeof createTheme !== "function" || createTheme.haAnthropicThemePatched) {
     return;
   }
   const createThemedTheme = function createThemedTheme(style, ...rest) {
@@ -785,7 +785,7 @@ const patchChartTheme = (chartClass) => {
     }
     return theme;
   };
-  createThemedTheme.haThemesPatched = true;
+  createThemedTheme.haAnthropicThemePatched = true;
   chartClass.prototype._createTheme = createThemedTheme;
 };
 customElements

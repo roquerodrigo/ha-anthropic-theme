@@ -20,6 +20,7 @@ from .const import (
     ISSUE_THEMES_NOT_LOADED,
     ISSUE_THEMES_RELOAD_FAILED,
     LOGGER,
+    PREVIOUS_DOMAIN,
     THEMES_DIRECTORY,
 )
 
@@ -32,9 +33,9 @@ PACKAGED_THEMES = Path(__file__).parent / THEMES_DIRECTORY
 RELOAD_THEMES_SERVICE = "reload_themes"
 
 
-class HaThemesThemeInstaller:
+class HaAnthropicThemeInstaller:
     """
-    Copies the packaged theme files into `<config>/themes/ha_themes/`.
+    Copies the packaged theme files into `<config>/themes/ha_anthropic_theme/`.
 
     Home Assistant only loads themes from the `frontend: themes:` YAML and replaces
     anything else on every `frontend.reload_themes`, so the themes are installed as
@@ -42,6 +43,10 @@ class HaThemesThemeInstaller:
     reloaded only when a file changed or the frontend does not serve them yet. A
     repair issue explains the fix when the reload fails or the configuration does not
     include that directory, and is re-checked whenever the themes are reloaded.
+
+    The integration used to be published as `ha_themes`, which installed the same
+    themes into `<config>/themes/ha_themes/`. A copy left there defines the same theme
+    names, and Home Assistant would keep either one at random, so it is removed.
     """
 
     def __init__(self, hass: HomeAssistant) -> None:
@@ -53,6 +58,11 @@ class HaThemesThemeInstaller:
     def target_directory(self) -> Path:
         """Directory the themes are installed into."""
         return Path(self._hass.config.path(THEMES_DIRECTORY, DOMAIN))
+
+    @property
+    def previous_target_directory(self) -> Path:
+        """Directory the integration installed its themes into before its rename."""
+        return Path(self._hass.config.path(THEMES_DIRECTORY, PREVIOUS_DOMAIN))
 
     @property
     def loaded_themes(self) -> frozenset[str]:
@@ -112,9 +122,9 @@ class HaThemesThemeInstaller:
 
     def _synchronize_files(self) -> bool:
         """Mirror the packaged theme files and return whether any file changed."""
+        files_changed = self._remove_previous_installation()
         self.target_directory.mkdir(parents=True, exist_ok=True)
         packaged = {source.name: source for source in PACKAGED_THEMES.glob("*.yaml")}
-        files_changed = False
         for stale in self.target_directory.glob("*.yaml"):
             if stale.name not in packaged:
                 stale.unlink()
@@ -132,6 +142,19 @@ class HaThemesThemeInstaller:
                 write_utf8_file_atomic(str(target), content, mode="wb")
                 files_changed = True
         return files_changed
+
+    def _remove_previous_installation(self) -> bool:
+        """Delete the themes installed before the rename and return whether any were."""
+        previous = self.previous_target_directory
+        if not previous.is_dir():
+            return False
+        shutil.rmtree(previous, onexc=self._log_removal_failure)
+        LOGGER.info(
+            "Removed %s: its themes are now installed into %s",
+            previous,
+            self.target_directory,
+        )
+        return True
 
     @staticmethod
     def _read_packaged_theme_names() -> tuple[str, ...]:

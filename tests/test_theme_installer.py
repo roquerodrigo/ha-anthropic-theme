@@ -11,12 +11,14 @@ from homeassistant.helpers import issue_registry
 from homeassistant.util.file import WriteError
 from pytest_homeassistant.common import async_capture_events
 
-from custom_components.ha_themes.const import (
+from custom_components.ha_anthropic_theme.const import (
     DOMAIN,
     ISSUE_THEMES_NOT_LOADED,
     ISSUE_THEMES_RELOAD_FAILED,
 )
-from custom_components.ha_themes.theme_installer import HaThemesThemeInstaller
+from custom_components.ha_anthropic_theme.theme_installer import (
+    HaAnthropicThemeInstaller,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -36,7 +38,7 @@ async def test_missing_themes_include_raises_a_repair_issue(
     hass: HomeAssistant, frontend: None, config_directory: Path
 ) -> None:
     (config_directory / "configuration.yaml").write_text("homeassistant:\n")
-    installed = await HaThemesThemeInstaller(hass).async_install()
+    installed = await HaAnthropicThemeInstaller(hass).async_install()
     assert installed
     repair = issue(hass)
     assert repair is not None
@@ -46,7 +48,7 @@ async def test_missing_themes_include_raises_a_repair_issue(
     }
 
     (config_directory / "configuration.yaml").write_text(THEMES_INCLUDE)
-    await HaThemesThemeInstaller(hass).async_install()
+    await HaAnthropicThemeInstaller(hass).async_install()
     assert issue(hass) is None
 
 
@@ -56,7 +58,7 @@ async def test_stale_files_are_removed_and_unchanged_files_kept(
     config_directory: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
     await installer.async_install()
     target = installer.target_directory
     kept = next(target.glob("*.yaml"))
@@ -74,10 +76,32 @@ async def test_stale_files_are_removed_and_unchanged_files_kept(
     assert f"Removed {stale}" in caplog.text
 
 
+async def test_themes_installed_before_the_rename_are_removed(
+    hass: HomeAssistant,
+    frontend: None,
+    config_directory: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    installer = HaAnthropicThemeInstaller(hass)
+    await installer.async_install()
+    previous = installer.previous_target_directory
+    previous.mkdir()
+    (previous / "anthropic.yaml").write_text("Anthropic: {}\n")
+    theme_reloads = async_capture_events(hass, EVENT_THEMES_UPDATED)
+
+    await installer.async_install()
+
+    await hass.async_block_till_done()
+    assert previous == config_directory / "themes" / "ha_themes"
+    assert not previous.exists()
+    assert len(theme_reloads) == 1
+    assert f"Removed {previous}" in caplog.text
+
+
 async def test_unchanged_files_with_loaded_themes_skip_the_reload(
     hass: HomeAssistant, frontend: None, config_directory: Path
 ) -> None:
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
     await installer.async_install()
     theme_reloads = async_capture_events(hass, EVENT_THEMES_UPDATED)
 
@@ -92,7 +116,7 @@ async def test_unchanged_files_with_loaded_themes_skip_the_reload(
 async def test_unchanged_files_missing_from_the_frontend_are_reloaded(
     hass: HomeAssistant, frontend: None, config_directory: Path
 ) -> None:
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
     installed = await installer.async_install()
     hass.data[DATA_THEMES].pop(installed[0])
     theme_reloads = async_capture_events(hass, EVENT_THEMES_UPDATED)
@@ -110,7 +134,7 @@ async def test_uninstall_logs_files_it_cannot_remove(
     config_directory: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
     await installer.async_install()
     failure = PermissionError("read-only")
 
@@ -124,7 +148,7 @@ async def test_uninstall_logs_files_it_cannot_remove(
 async def test_uninstall_without_installed_files_is_a_no_op(
     hass: HomeAssistant, frontend: None, config_directory: Path
 ) -> None:
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
 
     await installer.async_uninstall()
 
@@ -134,7 +158,7 @@ async def test_uninstall_without_installed_files_is_a_no_op(
 async def test_outdated_files_are_rewritten(
     hass: HomeAssistant, frontend: None, config_directory: Path
 ) -> None:
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
     await installer.async_install()
     installed = next(installer.target_directory.glob("*.yaml"))
     original = installed.read_text()
@@ -151,7 +175,7 @@ async def test_outdated_files_are_rewritten(
 async def test_interrupted_write_keeps_the_previous_file(
     hass: HomeAssistant, frontend: None, config_directory: Path
 ) -> None:
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
     await installer.async_install()
     installed = next(installer.target_directory.glob("*.yaml"))
     installed.write_text("Outdated: {}\n")
@@ -176,7 +200,7 @@ async def test_reload_failure_reports_the_error_instead_of_the_include(
     (config_directory / "configuration.yaml").write_text(THEMES_INCLUDE)
     (config_directory / "themes").mkdir()
     (config_directory / "themes" / "mine.yaml").write_text("Mine: 12\n")
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
 
     await installer.async_install()
 
@@ -201,7 +225,7 @@ async def test_uninstall_removes_the_reload_failure_issue(
     (config_directory / "configuration.yaml").write_text(
         "frontend:\n  themes:\n    Broken: 12\n"
     )
-    installer = HaThemesThemeInstaller(hass)
+    installer = HaAnthropicThemeInstaller(hass)
     await installer.async_install()
     assert issue(hass, ISSUE_THEMES_RELOAD_FAILED) is not None
 
@@ -211,4 +235,4 @@ async def test_uninstall_removes_the_reload_failure_issue(
 
 
 async def test_loaded_themes_is_empty_without_the_frontend(hass: HomeAssistant) -> None:
-    assert HaThemesThemeInstaller(hass).loaded_themes == frozenset()
+    assert HaAnthropicThemeInstaller(hass).loaded_themes == frozenset()

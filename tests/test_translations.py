@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-TRANSLATIONS = Path("custom_components/ha_themes/translations")
+TRANSLATIONS = Path("custom_components/ha_anthropic_theme/translations")
 
 
 def flatten_keys(tree: dict, prefix: str = "") -> set[str]:

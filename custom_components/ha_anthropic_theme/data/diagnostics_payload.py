@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TypedDict
 
 
-class HaThemesDiagnosticsPayload(TypedDict):
-    """What HA Themes reports in its diagnostics download."""
+class HaAnthropicThemeDiagnosticsPayload(TypedDict):
+    """What Anthropic Theme reports in its diagnostics download."""
 
     installed_themes: list[str]
     loaded_themes: list[str]

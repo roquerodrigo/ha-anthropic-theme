@@ -103,12 +103,12 @@ generates one support module, which the integration loads on every page, that bi
 map, the completion details and the search fields of the code editor at the same font, and loads
 web fonts on demand. For the charts it wraps `ha-chart-base`'s `_createTheme`, which builds the
 ECharts theme from the chart element's computed style when the chart is set up: when that style
-carries a project theme (`ha-themes-brand-icon-color` resolves there, from the global, view or
+carries a project theme (`ha-anthropic-theme-brand-icon-color` resolves there, from the global, view or
 card theme), the stack is replaced by the `ha-font-family-body` it resolves, and any other chart
 keeps the stock stack. `toolkit/tests/test_upstream_fonts.py` fails when the installed frontend
 changes either literal or renames the method, so the wrap is reviewed instead of silently
 missing. A theme that declares
-`typography.stylesheet` carries its URL in the project variable `ha-themes-font-stylesheet`;
+`typography.stylesheet` carries its URL in the project variable `ha-anthropic-theme-font-stylesheet`;
 the module adds the stylesheet while that variable is set on the page (by the global theme) or
 on a view or card (by a view or card theme), and removes it as soon as no visible theme sets it,
 so switching themes needs no reload. With a theme that declares no stylesheet, such as the
@@ -119,7 +119,7 @@ root.
 The chart wrap is installed once `ha-chart-base` is defined and changes nothing for a chart
 outside a project theme. Apart from it, the module is dormant while no project theme is in use:
 it only notices when a theme sets a
-`ha-themes-*` variable (every project theme sets `ha-themes-brand-icon-color`), without
+`ha-anthropic-theme-*` variable (every project theme sets `ha-anthropic-theme-brand-icon-color`), without
 patching `attachShadow` or observing any shadow root. The first such variable, from the
 global theme or from a view or card theme, activates it; it then scans the shadow roots that
 already exist and watches new ones. Once no element declares a project variable any more, it
@@ -131,7 +131,7 @@ again.
 A theme font is rarely as narrow as Roboto, and the frontend sizes its labels, tiles and
 table columns for Roboto. Poppins sets the same text about 21 % wider, so labels that fit
 in the default theme can end in an ellipsis. `typography.size_adjust` compensates: it is
-carried in `ha-themes-font-size-adjust`, and the body binding applies it as
+carried in `ha-anthropic-theme-font-size-adjust`, and the body binding applies it as
 `font-size-adjust`, which every element inherits, shadow roots included. The font is then
 scaled so that its x-height is that ratio of the font size. For Poppins, `0.528`, the
 x-height of Roboto, makes lowercase text exactly as tall as in the default theme (Poppins is
@@ -182,7 +182,7 @@ only accepts local overrides for custom integrations.
 The support module recolors them in the browser: while active, it watches every shadow root for
 `/api/brands/` images, loads each one into a canvas, and recolors it only when every opaque
 pixel is that exact blue, so real logos, multicolored or monochrome in another color, are
-never touched. The color comes from `--ha-themes-brand-icon-color`; a theme that does not
+never touched. The color comes from `--ha-anthropic-theme-brand-icon-color`; a theme that does not
 set it (the default theme included) gets the original images back.
 
 ## Settings icon tiles
@@ -197,7 +197,7 @@ navigation list, About, and the list of the search dialog) that matches each kno
 literal by value and replaces it with the entity color of the same hue (`#0D47A1` takes
 `--indigo-color`, `#F1C447` `--amber-color`), so the tiles stay as distinct from one another as
 in stock Home Assistant while following the theme's entity palette. Every project theme sets
-`ha-themes-icon-tile-palette-share` (`100%`) and `ha-themes-icon-tile-max-lightness` (`0.6`,
+`ha-anthropic-theme-icon-tile-palette-share` (`100%`) and `ha-anthropic-theme-icon-tile-max-lightness` (`0.6`,
 in OKLCH), which caps the tile so the white glyph keeps about 4:1 in both modes. Without
 those variables the rules reproduce the literal, so other themes see the stock tiles. A
 literal the table does not know keeps its stock color; `toolkit/tests/test_icon_tiles.py`
@@ -206,10 +206,10 @@ on About are brand marks and are left alone.
 
 The tiles are drawn round with `ha-border-radius-circle`, which a theme keeps round for
 avatars and round buttons, so the same components (and the restart dialog) also give the
-tiles `ha-themes-corner-radius`: they turn into the theme's rounded squares, like the entity
+tiles `ha-anthropic-theme-corner-radius`: they turn into the theme's rounded squares, like the entity
 tile icons. The search dialog sets the circle inline next to the tile color, so its rule
 matches a start-slot element whose inline style holds both, and an inline circle without a
-color stays round. Without `ha-themes-corner-radius` (`corner_radius: false`) the tiles keep
+color stays round. Without `ha-anthropic-theme-corner-radius` (`corner_radius: false`) the tiles keep
 their circle.
 
 ## Form fields
@@ -222,8 +222,8 @@ input (`ha-base-time-input`, one input per unit joined into a strip) draw the sa
 border. No theme variable reaches any of it.
 
 The support module adopts a stylesheet into those components that outlines the field, hides
-the line and clears the fill while a theme sets the switch `ha-themes-field-outline` to `1`.
-The outline takes `ha-themes-field-border-color` and `ha-themes-field-border-radius` (the
+the line and clears the fill while a theme sets the switch `ha-anthropic-theme-field-outline` to `1`.
+The outline takes `ha-anthropic-theme-field-border-color` and `ha-anthropic-theme-field-border-radius` (the
 builder sets `ha-color-border-neutral-quiet` and `ha-border-radius-md`, which the
 [corner radius](#corner-radius) sets), steps to
 `ha-color-border-neutral-normal` on hover, turns `primary-color` on focus and
@@ -252,7 +252,7 @@ so the scale alone does not reach them.
 
 A theme's `corner_radius` (default `8px`) replaces every step of the scale, the pill, and each
 of those hooks with one value, so a card, a dialog, a button, a badge and a field share the same
-corner whatever their size. The builder also sets `ha-themes-corner-radius`, which the support
+corner whatever their size. The builder also sets `ha-anthropic-theme-corner-radius`, which the support
 module gives the input chips (`ha-input-chip`), since they lock a 16px pill on their own host,
 and the colored icon tiles of Settings (see [Settings icon tiles](#settings-icon-tiles)).
 `ha-border-radius-circle` (50%) and `ha-border-radius-square` (0) are shapes rather than
@@ -273,7 +273,7 @@ Components expose `backdrop-filter` hooks, all unset (`none`) by default:
 
 | Hook | Element | Background it blurs through |
 | --- | --- | --- |
-| `app-header-backdrop-filter` | Fixed top bar of dashboards (`hui-root`) and the overview | `ha-themes-dashboard-header-background` (see below) |
+| `app-header-backdrop-filter` | Fixed top bar of dashboards (`hui-root`) and the overview | `ha-anthropic-theme-dashboard-header-background` (see below) |
 | `ha-card-backdrop-filter` | Every `ha-card` | `ha-card-background` (falls back to `card-background-color`) |
 | `ha-dialog-surface-backdrop-filter` | Dialog and bottom-sheet surfaces | `ha-dialog-surface-background` |
 | `ha-dialog-scrim-backdrop-filter` | The page behind a modal (default `brightness(68%)`) | the scrim itself |
@@ -295,7 +295,7 @@ Keep `app-header-background-color` opaque: only the dashboard header reads the b
 about a hundred other places paint that color without one (the notification drawer,
 settings page toolbars, top app bars, tab scroll buttons, badge borders), and content behind
 them would show through unblurred. The builder writes the translucent color to
-`ha-themes-dashboard-header-background` instead, and the support module paints the
+`ha-anthropic-theme-dashboard-header-background` instead, and the support module paints the
 dashboard header (and its tab scroll buttons) with it, falling back to
 `app-header-background-color` when a theme does not set it.
 
@@ -315,5 +315,5 @@ browser's theme color) should stay an opaque hex value.
 | Dark mode declares `ha-color-border-normal` instead of `ha-color-border-primary-normal` | The primary normal border keeps its light value in dark mode | Set `ha-color-border-primary-normal` to `primary.50` in dark |
 | Dark `wa-form-control-padding-inline` has the next stylesheet glued onto it, and the inline value survives a switch back to light | Web Awesome form controls lose their inline padding and the gap before end slots (units, icons) in both modes | Set to `var(--ha-space-3)` in both modes |
 
-`ha-themes catalog` re-detects broken references on every capture and lists them in
+`ha-anthropic-theme catalog` re-detects broken references on every capture and lists them in
 [tokens-global.md](tokens-global.md#broken-upstream-references).

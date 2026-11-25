@@ -55,8 +55,8 @@ def onboard() -> DevInstance:
 
 
 def add_integration(access_token: str) -> dict:
-    """Add the ha_themes integration through its config flow, as a user would."""
-    flow = _post("/api/config/config_entries/flow", {"handler": "ha_themes"}, access_token)
+    """Add the ha_anthropic_theme integration through its config flow, as a user would."""
+    flow = _post("/api/config/config_entries/flow", {"handler": "ha_anthropic_theme"}, access_token)
     if flow.get("type") == "abort":
         return flow
     return _post(f"/api/config/config_entries/flow/{flow['flow_id']}", {}, access_token)

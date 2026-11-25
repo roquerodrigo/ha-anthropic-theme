@@ -1,6 +1,6 @@
 {
-  "domain": "ha_themes",
-  "name": "HA Themes",
+  "domain": "ha_anthropic_theme",
+  "name": "Anthropic Theme",
   "codeowners": [
     "@roquerodrigo"
   ],
@@ -9,10 +9,10 @@
     "frontend",
     "http"
   ],
-  "documentation": "https://github.com/roquerodrigo/ha-themes",
+  "documentation": "https://github.com/roquerodrigo/ha-anthropic-theme",
   "integration_type": "service",
   "iot_class": "calculated",
-  "issue_tracker": "https://github.com/roquerodrigo/ha-themes/issues",
+  "issue_tracker": "https://github.com/roquerodrigo/ha-anthropic-theme/issues",
   "single_config_entry": true,
   "version": "1.1.1"
 }

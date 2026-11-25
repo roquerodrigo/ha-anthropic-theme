@@ -181,11 +181,11 @@ def test_validation_flags_role_tokens_nobody_reads() -> None:
 
 def test_dynamic_families_and_support_module_variables_count_as_readers() -> None:
     catalog = TokenCatalog("test", "test", "today", {}, {"--state-": 1})
-    support_source = "color: var(--ha-themes-menu-background);"
+    support_source = "color: var(--ha-anthropic-theme-menu-background);"
 
     assert has_reader("state-light-active-color", catalog, support_source)
-    assert has_reader("ha-themes-menu-background", catalog, support_source)
-    assert not has_reader("ha-themes-menu-background-color", catalog, support_source)
+    assert has_reader("ha-anthropic-theme-menu-background", catalog, support_source)
+    assert not has_reader("ha-anthropic-theme-menu-background-color", catalog, support_source)
     assert not has_reader("primary-color", catalog, support_source)
 
 
@@ -279,8 +279,8 @@ def test_flat_overlays_keep_an_outline_unless_shadows_are_enabled() -> None:
 def test_form_fields_are_outlined_unless_disabled() -> None:
     base = build_theme(minimal_definition()).base
     assert {token: base[token] for token in FIELD_OUTLINE} == FIELD_OUTLINE
-    assert base["ha-themes-field-outline"] == "1"
-    assert base["ha-themes-field-border-color"] == "var(--ha-color-border-neutral-quiet)"
+    assert base["ha-anthropic-theme-field-outline"] == "1"
+    assert base["ha-anthropic-theme-field-border-color"] == "var(--ha-color-border-neutral-quiet)"
     unoutlined = build_theme(minimal_definition(field_outline=False)).base
     assert not set(FIELD_OUTLINE) & set(unoutlined)
 
@@ -316,7 +316,7 @@ def test_every_radius_of_the_scale_and_its_bridges_takes_the_corner_radius() -> 
         radius_tokens, "6px"
     )
     assert base[CORNER_RADIUS_TOKEN] == "6px"
-    assert base["ha-themes-field-border-radius"] == "var(--ha-border-radius-md)"
+    assert base["ha-anthropic-theme-field-border-radius"] == "var(--ha-border-radius-md)"
 
 
 def test_circles_and_squares_keep_their_shape() -> None:
@@ -412,21 +412,21 @@ def test_backdrop_blur_can_be_disabled() -> None:
 
 
 def test_support_module_is_generated_from_the_packaged_source(tmp_path: Path) -> None:
-    module = write_support_module(tmp_path / "ha-themes.js").read_text()
+    module = write_support_module(tmp_path / "ha-anthropic-theme.js").read_text()
     assert f"--{FONT_STYLESHEET_TOKEN}" in module
     assert f"--{FONT_SIZE_ADJUST_TOKEN}" in module
     assert "fonts.googleapis.com" not in module
-    assert "--ha-themes-brand-icon-color" in module
+    assert "--ha-anthropic-theme-brand-icon-color" in module
     assert f"--{DASHBOARD_HEADER_BACKGROUND_TOKEN}" in module
-    assert "--ha-themes-menu-background" in module
+    assert "--ha-anthropic-theme-menu-background" in module
     assert f"--{TOAST_EDGE_TOKEN}" in module
     for token in ICON_TILE_HARMONY:
         assert f"--{token}" in module
 
 
 def test_every_theme_wakes_the_dormant_support_module(tmp_path: Path) -> None:
-    module = write_support_module(tmp_path / "ha-themes.js").read_text()
-    prefix = "ha-themes-"
+    module = write_support_module(tmp_path / "ha-anthropic-theme.js").read_text()
+    prefix = "ha-anthropic-theme-"
     assert f'PROJECT_VARIABLE_PREFIX = "--{prefix}"' in module
     assert FONT_STYLESHEET_TOKEN.startswith(prefix)
     assert FONT_SIZE_ADJUST_TOKEN.startswith(prefix)
@@ -437,8 +437,8 @@ def test_every_theme_wakes_the_dormant_support_module(tmp_path: Path) -> None:
 def test_menus_follow_the_surface_role_unless_set() -> None:
     theme = build_theme(minimal_definition(roles={"dark": {"menu_background": "#000000"}}))
     light = theme.modes["light"]
-    assert light["ha-themes-menu-background"] == light["mdc-theme-surface"]
-    assert theme.modes["dark"]["ha-themes-menu-background"] == "#000000"
+    assert light["ha-anthropic-theme-menu-background"] == light["mdc-theme-surface"]
+    assert theme.modes["dark"]["ha-anthropic-theme-menu-background"] == "#000000"
 
 
 def test_code_editor_follows_the_surface_role_unless_set() -> None:
@@ -498,7 +498,7 @@ def test_validation_flags_syntax_colors_below_their_floor() -> None:
 def test_brand_icons_follow_the_primary_role() -> None:
     theme = build_theme(minimal_definition())
     for tokens in theme.modes.values():
-        assert tokens["ha-themes-brand-icon-color"] == tokens["primary-color"]
+        assert tokens["ha-anthropic-theme-brand-icon-color"] == tokens["primary-color"]
 
 
 def test_entity_icons_follow_the_primary_role_unless_a_theme_sets_them() -> None:

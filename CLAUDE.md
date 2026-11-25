@@ -12,16 +12,17 @@ integration and the toolkit, and maps the integration's modules. For what the pr
 
 ## Two halves
 
-- `custom_components/ha_themes/` — the integration HACS installs. Strict rules (`ruff`
-  `ALL`, strict mypy, 90 % coverage gate).
+- `custom_components/ha_anthropic_theme/` — the integration HACS installs. Strict rules
+  (`ruff` `ALL`, strict mypy, 90 % coverage gate).
 - `toolkit/` — development tooling: token capture in Google Chrome, reference docs,
   palette generation and the theme builder. Never shipped; lighter lint config in
-  `toolkit/ruff.toml`; run it with `scripts/ha-themes`.
+  `toolkit/ruff.toml`; run it with `scripts/ha-anthropic-theme`.
 
-The builder writes into the integration: `custom_components/ha_themes/themes/*.yaml` and
-`custom_components/ha_themes/frontend/ha-themes.js` are **generated** from `themes-src/`
-and `toolkit/ha_theme_kit/support/ha-themes.js`. Never edit them by hand; rebuild and
-commit the output with the source change.
+The builder writes into the integration:
+`custom_components/ha_anthropic_theme/themes/*.yaml` and
+`custom_components/ha_anthropic_theme/frontend/ha-anthropic-theme.js` are **generated**
+from `themes-src/` and `toolkit/ha_theme_kit/support/ha-anthropic-theme.js`. Never edit
+them by hand; rebuild and commit the output with the source change.
 
 ## Verification workflow
 
@@ -39,10 +40,11 @@ The coverage gate measures only the integration, so a toolkit-only run needs
 `uv run pytest toolkit/tests --no-cov`. `toolkit/tests/test_generated_files.py` rebuilds
 the themes and the support module in memory and fails when the committed output is stale.
 
-Changes to themes or the support module also need `scripts/ha-themes build --strict` and a
-look in the browser (`scripts/ha-themes preview`). Browser sessions keep the themes they apply
-inside their own page, so sessions can run side by side, and hand the dev instance back with
-the last tested theme selected and dark mode on automatic.
+Changes to themes or the support module also need
+`scripts/ha-anthropic-theme build --strict` and a look in the browser
+(`scripts/ha-anthropic-theme preview`). Browser sessions keep the themes they apply inside
+their own page, so sessions can run side by side, and hand the dev instance back with the
+last tested theme selected and dark mode on automatic.
 
 ## Bumping the Home Assistant version
 
@@ -59,10 +61,13 @@ It does not bring pytest-cov, which is pinned here for the coverage gate.
 
 - Home Assistant only loads themes from the `frontend: themes:` YAML and replaces any other
   theme on `frontend.reload_themes`, so the integration installs files into
-  `themes/ha_themes/` and reloads (only when a file changed or the frontend lacks the
-  themes), instead of injecting themes into `hass.data`. Repair
-  issues cover configurations that do not include the themes directory and reloads that
-  fail (for example on an invalid theme elsewhere in the configuration).
+  `themes/ha_anthropic_theme/` and reloads (only when a file changed or the frontend lacks
+  the themes), instead of injecting themes into `hass.data`. Repair issues cover
+  configurations that do not include the themes directory and reloads that fail (for
+  example on an invalid theme elsewhere in the configuration).
+- The integration was published as `ha_themes` before its rename, and that version
+  installed the same theme names into `themes/ha_themes/`. Home Assistant keeps either copy
+  at random, so the installer deletes that directory on every install.
 - The support module is added with `add_extra_js_url` under a content-hash URL: both the
   HTTP cache (31 days on static files) and the frontend service worker
   (stale-while-revalidate) would otherwise serve old copies. Lovelace resources are not an

@@ -4,7 +4,9 @@ from pathlib import Path
 
 from ha_theme_kit.theme.builder import BuiltTheme
 
-INTEGRATION_DIRECTORY = Path(__file__).resolve().parents[3] / "custom_components" / "ha_themes"
+INTEGRATION_DIRECTORY = (
+    Path(__file__).resolve().parents[3] / "custom_components" / "ha_anthropic_theme"
+)
 THEMES_DIRECTORY = INTEGRATION_DIRECTORY / "themes"
 YAML_NON_PRINTABLE = re.compile("[\u007f-\u009f\u2028\u2029\ufeff\ufffe\uffff]")
 
@@ -12,7 +14,7 @@ YAML_NON_PRINTABLE = re.compile("[\u007f-\u009f\u2028\u2029\ufeff\ufffe\uffff]")
 def render_home_assistant_yaml(theme: BuiltTheme, source_version: str) -> str:
     lines = [
         f"# Generated from themes-src/{theme.definition.slug}.yaml for frontend {source_version}.",
-        "# Do not edit by hand: run `ha-themes build`.",
+        "# Do not edit by hand: run `ha-anthropic-theme build`.",
         f"{_double_quoted_scalar(theme.definition.name)}:",
         *_render_block(theme.base, indent=2),
         "  modes:",
@@ -42,8 +44,8 @@ def write_theme(theme: BuiltTheme, source_version: str, directory: Path = THEMES
     return path
 
 
-SUPPORT_MODULE = INTEGRATION_DIRECTORY / "frontend" / "ha-themes.js"
-SUPPORT_MODULE_SOURCE = Path(__file__).resolve().parents[1] / "support" / "ha-themes.js"
+SUPPORT_MODULE = INTEGRATION_DIRECTORY / "frontend" / "ha-anthropic-theme.js"
+SUPPORT_MODULE_SOURCE = Path(__file__).resolve().parents[1] / "support" / "ha-anthropic-theme.js"
 
 
 def write_support_module(path: Path = SUPPORT_MODULE) -> Path:

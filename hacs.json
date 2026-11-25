@@ -1,6 +1,6 @@
 {
-    "name": "HA Themes",
+    "name": "Anthropic Theme",
     "zip_release": true,
-    "filename": "ha_themes.zip",
+    "filename": "ha_anthropic_theme.zip",
     "homeassistant": "2026.11.0"
 }

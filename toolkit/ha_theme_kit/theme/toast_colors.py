@@ -26,8 +26,8 @@ from ha_theme_kit.theme.semantic_layer import (
 from ha_theme_kit.theme.token_colors import resolve_token_color
 
 TOAST_BACKGROUND_TOKEN = "ha-color-neutral-10"
-TOAST_TEXT_TOKEN = "ha-themes-toast-text-color"
-TOAST_ACTION_TOKEN = "ha-themes-toast-action-color"
+TOAST_TEXT_TOKEN = "ha-anthropic-theme-toast-text-color"
+TOAST_ACTION_TOKEN = "ha-anthropic-theme-toast-action-color"
 FRONTEND_TEXT_TOKEN = "ha-color-on-neutral-loud"
 FRONTEND_ACTION_TOKEN = "ha-color-on-primary-normal"
 TOAST_ON_COLORS = {TOAST_TEXT_TOKEN: FRONTEND_TEXT_TOKEN, TOAST_ACTION_TOKEN: FRONTEND_ACTION_TOKEN}

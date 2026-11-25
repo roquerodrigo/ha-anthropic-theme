@@ -8,14 +8,14 @@ from homeassistant.config_entries import ConfigEntryDisabler, ConfigEntryState
 from homeassistant.helpers import issue_registry
 from pytest_homeassistant.common import MockConfigEntry
 
-from custom_components.ha_themes.const import (
+from custom_components.ha_anthropic_theme.const import (
     DOMAIN,
     ISSUE_THEMES_NOT_LOADED,
     ISSUE_THEMES_RELOAD_FAILED,
 )
-from custom_components.ha_themes.theme_installer import (
+from custom_components.ha_anthropic_theme.theme_installer import (
     PACKAGED_THEMES,
-    HaThemesThemeInstaller,
+    HaAnthropicThemeInstaller,
 )
 
 if TYPE_CHECKING:
@@ -61,7 +61,7 @@ async def test_setup_registers_the_module_under_a_content_hash(
 ) -> None:
     url = setup_integration.runtime_data.frontend_module.url
     assert url is not None
-    assert url.startswith(f"/{DOMAIN}/ha-themes.js?v=")
+    assert url.startswith(f"/{DOMAIN}/ha-anthropic-theme.js?v=")
     assert url in hass.data[DATA_EXTRA_MODULE_URL].urls
 
 
@@ -72,7 +72,7 @@ async def test_failed_install_does_not_load_the_module(
 ) -> None:
     (config_directory / "themes").write_text("not a directory")
     modules_before = set(hass.data[DATA_EXTRA_MODULE_URL].urls)
-    entry = MockConfigEntry(domain=DOMAIN, data={}, title="HA Themes")
+    entry = MockConfigEntry(domain=DOMAIN, data={}, title="Anthropic Theme")
     entry.add_to_hass(hass)
 
     assert not await hass.config_entries.async_setup(entry.entry_id)
@@ -197,10 +197,10 @@ async def test_removing_an_entry_that_failed_setup_leaves_nothing_behind(
     config_directory: Path,
 ) -> None:
     modules_before = set(hass.data[DATA_EXTRA_MODULE_URL].urls)
-    entry = MockConfigEntry(domain=DOMAIN, data={}, title="HA Themes")
+    entry = MockConfigEntry(domain=DOMAIN, data={}, title="Anthropic Theme")
     entry.add_to_hass(hass)
     with patch.object(
-        HaThemesThemeInstaller,
+        HaAnthropicThemeInstaller,
         "_synchronize_files",
         side_effect=PermissionError("read-only"),
     ):
