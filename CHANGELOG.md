@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.0.0](https://github.com/roquerodrigo/ha-anthropic-theme/compare/v1.1.1...v2.0.0) (2026-11-25)
+
+The integration is renamed to Anthropic Theme with a new domain, which requires reinstalling it and renaming any custom theme variables.
+
+### Breaking changes
+
+- The integration is renamed from HA Themes to Anthropic Theme and its domain changes from ha_themes to ha_anthropic_theme, so it does not update in place: delete the HA Themes entry, uninstall it, install Anthropic Theme from roquerodrigo/ha-anthropic-theme, add it again and restart. If the theme was set as default with frontend.set_theme, run that action again. ([#40](https://github.com/roquerodrigo/ha-anthropic-theme/pull/40))
+- Custom themes that set ha-themes-* variables must rename them to ha-anthropic-theme-*. ([#40](https://github.com/roquerodrigo/ha-anthropic-theme/pull/40))
+
+### Improvements
+
+- Theme files left in themes/ha_themes/ by the previous version are now deleted on start, so they cannot replace the new copy of the Anthropic theme. ([#40](https://github.com/roquerodrigo/ha-anthropic-theme/pull/40))
+- The integration icon now shows the Anthropic symbol and its logo the Anthropic wordmark, with variants for dark backgrounds. ([#40](https://github.com/roquerodrigo/ha-anthropic-theme/pull/40))
+- The README is rewritten for people installing the theme, with screenshots, requirements, setup, troubleshooting, known limitations and upgrade steps from HA Themes. ([#36](https://github.com/roquerodrigo/ha-anthropic-theme/pull/36), [#40](https://github.com/roquerodrigo/ha-anthropic-theme/pull/40))
+
 ## [1.1.1](https://github.com/roquerodrigo/ha-anthropic-theme/compare/v1.1.0...v1.1.1) (2026-11-08)
 
 ### Improvements
