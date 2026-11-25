@@ -82,6 +82,16 @@ codeEditorFontStyles.replaceSync(`
   .cm-textfield { font-family: var(--ha-font-family-body) !important; }
 `);
 
+// The weather card hangs the temperature unit beside the number in an absolute box, over a margin
+// sized for Roboto, so a wider body font pushes the unit past the card edge, where it is clipped.
+// The unit joins the line instead, and the number makes room for it at any font width.
+const weatherTemperatureUnitStyles = new CSSStyleSheet();
+weatherTemperatureUnitStyles.replaceSync(`
+  .temp-attribute .temp,
+  [class*="narrow"] .temp-attribute .temp { margin-right: 0; margin-inline-end: 0; }
+  .temp-attribute .temp span { position: relative; vertical-align: top; }
+`);
+
 // The integration page's entry lists take their surface from the page-toned card background,
 // so they are raised to the card tone they would have on the default theme.
 const configEntryListStyles = new CSSStyleSheet();
@@ -339,6 +349,7 @@ const hostStyles = new Map([
   ["ha-map", mapFontStyles],
   ["ha-code-editor", codeEditorFontStyles],
   ["ha-config-entry-row", configEntryListStyles],
+  ["hui-weather-forecast-card", weatherTemperatureUnitStyles],
 ]);
 
 const styleHost = (root) => {

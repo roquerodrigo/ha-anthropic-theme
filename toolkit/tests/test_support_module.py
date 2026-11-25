@@ -582,6 +582,44 @@ def test_code_editor_details_and_search_fields_take_the_theme_font(
     assert page_errors == []
 
 
+def test_weather_card_keeps_a_wide_temperature_unit_inside_the_card(
+    page: Page, page_errors: list[str]
+) -> None:
+    unit_overflow = """() => {
+      const unit = window.findElement('unit');
+      const info = unit.closest('.info');
+      return unit.getBoundingClientRect().right - info.getBoundingClientRect().right;
+    }"""
+    page.evaluate(
+        """() => {
+          document.documentElement.style
+            .setProperty("--ha-anthropic-theme-brand-icon-color", "red");
+          const host = document.createElement("hui-weather-forecast-card");
+          const shadow = host.attachShadow({ mode: "open" });
+          const sheet = new CSSStyleSheet();
+          sheet.replaceSync(`
+            .info { display: flex; justify-content: space-between; width: 300px; overflow: hidden; }
+            .temp-attribute { text-align: right; }
+            .temp-attribute .temp { position: relative; margin-right: 24px; font-size: 28px; }
+            .temp-attribute .temp span {
+              position: absolute; top: 1px; font-size: 24px; letter-spacing: 16px;
+            }
+          `);
+          shadow.adoptedStyleSheets = [sheet];
+          shadow.innerHTML = `
+            <div class="info">
+              <div class="name-state">Cloudy</div>
+              <div class="temp-attribute">
+                <div class="temp">33&nbsp;<span id="unit">°C</span></div>
+              </div>
+            </div>`;
+          document.body.append(host);
+        }"""
+    )
+    page.wait_for_function(f"() => ({unit_overflow})() <= 0")
+    assert page_errors == []
+
+
 CHART_THEME = """(withProjectTheme) => {
   const root = document.documentElement.style;
   root.setProperty("--ha-font-family-body", "Georgia");
