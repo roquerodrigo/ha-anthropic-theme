@@ -1,4 +1,4 @@
-"""HA Themes integration for Home Assistant."""
+"""Anthropic Theme integration for Home Assistant."""
 
 from __future__ import annotations
 
@@ -7,19 +7,21 @@ from typing import TYPE_CHECKING
 from homeassistant.exceptions import ConfigEntryError
 
 from .const import DOMAIN
-from .data import HaThemesData
-from .frontend_module import HaThemesFrontendModule
-from .theme_installer import HaThemesThemeInstaller
+from .data import HaAnthropicThemeData
+from .frontend_module import HaAnthropicThemeFrontendModule
+from .theme_installer import HaAnthropicThemeInstaller
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-    from .data import HaThemesConfigEntry
+    from .data import HaAnthropicThemeConfigEntry
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: HaThemesConfigEntry) -> bool:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: HaAnthropicThemeConfigEntry
+) -> bool:
     """Install the themes and load the support module on every frontend page."""
-    theme_installer = HaThemesThemeInstaller(hass)
+    theme_installer = HaAnthropicThemeInstaller(hass)
     try:
         installed_themes = await theme_installer.async_install()
     except OSError as error:
@@ -31,9 +33,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: HaThemesConfigEntry) -> 
                 "error": str(error),
             },
         ) from error
-    frontend_module = HaThemesFrontendModule(hass)
+    frontend_module = HaAnthropicThemeFrontendModule(hass)
     await frontend_module.async_register()
-    entry.runtime_data = HaThemesData(
+    entry.runtime_data = HaAnthropicThemeData(
         theme_installer=theme_installer,
         frontend_module=frontend_module,
         installed_themes=installed_themes,
@@ -44,7 +46,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: HaThemesConfigEntry) -> 
 
 async def async_unload_entry(
     hass: HomeAssistant,  # noqa: ARG001 -- part of the signature Home Assistant calls
-    entry: HaThemesConfigEntry,
+    entry: HaAnthropicThemeConfigEntry,
 ) -> bool:
     """Stop loading the support module; installed themes stay until removal."""
     entry.runtime_data.frontend_module.unregister()
@@ -54,7 +56,7 @@ async def async_unload_entry(
 
 async def async_remove_entry(
     hass: HomeAssistant,
-    entry: HaThemesConfigEntry,  # noqa: ARG001 -- part of the signature Home Assistant calls
+    entry: HaAnthropicThemeConfigEntry,  # noqa: ARG001 -- part of the signature Home Assistant calls
 ) -> None:
     """Remove the installed theme files when the integration is deleted."""
-    await HaThemesThemeInstaller(hass).async_uninstall()
+    await HaAnthropicThemeInstaller(hass).async_uninstall()

@@ -9,7 +9,8 @@ date). Raised elements have their own hooks, mapped to `surface`: `ha-card-backg
 `ha-dialog-surface-background`, `wa-color-surface-default` and `mdc-theme-surface`. The
 support module raises the elements that read `card-background-color` from a variable set on
 their own host, out of a theme's reach: dropdown menus and the map overview panel take
-`ha-themes-menu-background`, and the integration page's entry lists take `ha-card-background`.
+`ha-anthropic-theme-menu-background`, and the integration page's entry lists take
+`ha-card-background`.
 
 `primary` and `text_on_primary` drive both the legacy pair (`primary-color` under
 `text-primary-color`, also drawn on `accent-color`) and the loud fills of buttons and FABs,
@@ -63,8 +64,8 @@ ROLE_TOKENS: dict[str, tuple[str, ...]] = {
     "sidebar_selected": ("sidebar-selected-icon-color",),
     "header_background": ("app-header-background-color",),
     "header_text": ("app-header-text-color",),
-    "brand_icon": ("ha-themes-brand-icon-color",),
-    "menu_background": ("ha-themes-menu-background",),
+    "brand_icon": ("ha-anthropic-theme-brand-icon-color",),
+    "menu_background": ("ha-anthropic-theme-menu-background",),
     "code_editor_background": ("code-editor-background-color",),
     "syntax_comment": ("codemirror-comment",),
     "syntax_keyword": ("codemirror-keyword",),
@@ -157,7 +158,7 @@ ROLE_FALLBACKS: dict[str, str] = {
 generic integration icons and entity icons without a state color take the primary color, and
 menus and the code editor are raised like cards."""
 
-PROJECT_TOKEN_PREFIX = "ha-themes-"
+PROJECT_TOKEN_PREFIX = "ha-anthropic-theme-"
 """Variables read by the support module rather than the frontend."""
 
 FLAT_ELEVATION: dict[str, str] = dict.fromkeys(
@@ -176,7 +177,7 @@ FLAT_ELEVATION: dict[str, str] = dict.fromkeys(
 )
 """A transparent zero shadow instead of `none` stays valid inside comma-separated shadow lists."""
 
-TOAST_EDGE_TOKEN = "ha-themes-toast-box-shadow"
+TOAST_EDGE_TOKEN = "ha-anthropic-theme-toast-box-shadow"
 """The toast reads the shared `wa-shadow-l` directly, so the support module paints its edge
 with this token instead."""
 
@@ -187,23 +188,23 @@ OVERLAY_EDGE: dict[str, str] = dict.fromkeys(
 elevation gives them the 1px outline that menus and cards already have."""
 
 ICON_TILE_HARMONY: dict[str, str] = {
-    "ha-themes-icon-tile-palette-share": "100%",
-    "ha-themes-icon-tile-max-lightness": "0.6",
+    "ha-anthropic-theme-icon-tile-palette-share": "100%",
+    "ha-anthropic-theme-icon-tile-max-lightness": "0.6",
 }
 """Settings, System, About and the search dialog draw their icon tiles in literal colors. The
 support module moves each tile to the entity color of the same hue by this share, and caps its
 OKLCH lightness so the white glyph keeps about 4:1 in both modes."""
 
 FIELD_OUTLINE: dict[str, str] = {
-    "ha-themes-field-outline": "1",
-    "ha-themes-field-border-color": "var(--ha-color-border-neutral-quiet)",
-    "ha-themes-field-border-radius": "var(--ha-border-radius-md)",
+    "ha-anthropic-theme-field-outline": "1",
+    "ha-anthropic-theme-field-border-color": "var(--ha-color-border-neutral-quiet)",
+    "ha-anthropic-theme-field-border-radius": "var(--ha-border-radius-md)",
 }
 """Filled text fields, selects and pickers mark their edge with a bottom line. The support
 module outlines them instead, takes the focus and error colors over to the outline, hides the
 line and clears the fill."""
 
-CORNER_RADIUS_TOKEN = "ha-themes-corner-radius"
+CORNER_RADIUS_TOKEN = "ha-anthropic-theme-corner-radius"
 """Read by the support module where a component locks a literal radius on its own host."""
 
 CORNER_RADIUS_SCALE: tuple[str, ...] = (
@@ -270,7 +271,7 @@ BACKDROP_BLUR_FILTERS: dict[str, str] = {
     "ha-dialog-scrim-backdrop-filter": f"blur(6px) brightness({SCRIM_BRIGHTNESS_PERCENT}%)",
 }
 
-DASHBOARD_HEADER_BACKGROUND_TOKEN = "ha-themes-dashboard-header-background"
+DASHBOARD_HEADER_BACKGROUND_TOKEN = "ha-anthropic-theme-dashboard-header-background"
 """Only the dashboard header blurs, but about a hundred other places paint
 `app-header-background-color` without a blur, so that token stays opaque and the support
 module paints the dashboard header with this one instead."""

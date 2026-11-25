@@ -1,6 +1,6 @@
 # Code Style Guide
 
-Style conventions for the `ha-themes` project. Before committing,
+Style conventions for the `ha-anthropic-theme` project. Before committing,
 run `uv run ruff format --check .`, `uv run ruff check .` and
 `uv run mypy` — all must exit cleanly.
 `uv run pytest` (with the 90 % coverage gate) follows.
@@ -11,27 +11,29 @@ run `uv run ruff format --check .`, `uv run ruff check .` and
 
 The repository has two halves with different rules:
 
-- **The integration** — `custom_components/ha_themes/`, the only code HACS installs, and
-  its tests in `tests/`. Every rule in this file applies: ruff `ALL`, strict mypy, the
-  90 % coverage gate and one top-level class per file.
+- **The integration** — `custom_components/ha_anthropic_theme/`, the only code HACS
+  installs, and its tests in `tests/`. Every rule in this file applies: ruff `ALL`,
+  strict mypy, the 90 % coverage gate and one top-level class per file.
 - **The toolkit** — `toolkit/ha_theme_kit/`, development tooling that is never shipped,
-  run through `scripts/ha-themes`. It keeps a lighter ruleset (`toolkit/ruff.toml`), is
-  not type-checked by mypy, may group closely related classes in one module, and its
-  tests in `toolkit/tests/` run with the rest but do not count toward the coverage gate.
+  run through `scripts/ha-anthropic-theme`. It keeps a lighter ruleset
+  (`toolkit/ruff.toml`), is not type-checked by mypy, may group closely related classes
+  in one module, and its tests in `toolkit/tests/` run with the rest but do not count
+  toward the coverage gate.
   The language, naming, docstring, comment, import and logging rules still apply.
   - `color/` — OKLCH conversion, CSS color parsing, palettes and color-vision checks.
   - `inventory/` — token capture in Google Chrome against the dev instance, the token
     catalog and the generated reference docs.
   - `theme/` — theme definitions from `themes-src/`, roles, palette resolution,
     contrast validation, the builder and the YAML writer.
-  - `support/ha-themes.js` — source of the support module the builder copies into the
-    integration.
+  - `support/ha-anthropic-theme.js` — source of the support module the builder copies
+    into the integration.
   - `cli.py` — the `catalog`, `onboard`, `docs`, `build`, `palette` and `preview`
-    commands behind `scripts/ha-themes`.
+    commands behind `scripts/ha-anthropic-theme`.
 
-Generated files — `custom_components/ha_themes/themes/*.yaml`,
-`custom_components/ha_themes/frontend/ha-themes.js`, `catalog/`, `docs/tokens-*.md` and
-`previews/` — are never edited by hand; change the sources and rebuild.
+Generated files — `custom_components/ha_anthropic_theme/themes/*.yaml`,
+`custom_components/ha_anthropic_theme/frontend/ha-anthropic-theme.js`, `catalog/`,
+`docs/tokens-*.md` and `previews/` — are never edited by hand; change the sources and
+rebuild.
 
 The integration has no entities, coordinator, API client, credentials, options flow,
 reauth or fixable repairs. Adding any of them is a design change: follow the Home
@@ -70,21 +72,22 @@ Assistant developer documentation and update this file in the same change.
   term is English (`fetch_bandeira_tarifaria`, `UnidadeConsumidoraSensor`).
   Identifiers drop diacritics (`estacao`); prose and translated strings keep
   them (`estação`).
-- User-facing strings live in `custom_components/ha_themes/translations/{en,pt-BR}.json`
-  only — never hardcoded in Python.
+- User-facing strings live in
+  `custom_components/ha_anthropic_theme/translations/{en,pt-BR}.json` only — never
+  hardcoded in Python.
 
 ## Integration modules
 
 | Module | Responsibility |
 |---|---|
-| `__init__.py` | Entry lifecycle: `async_setup_entry` installs the themes, registers the support module and stores `HaThemesData`; `async_unload_entry` stops loading the module and clears the repair issues but keeps the theme files; `async_remove_entry` deletes the theme files when the integration is removed. |
-| `theme_installer.py` | `HaThemesThemeInstaller` mirrors the packaged `themes/*.yaml` into `<config>/themes/ha_themes/`, reloads the frontend themes only when a file changed or a theme is not served yet, and owns the repair issues. |
-| `frontend_module.py` | `HaThemesFrontendModule` serves `frontend/ha-themes.js` on a static path and adds it with `add_extra_js_url` under a content-hash URL. |
-| `config_flow.py` | `HaThemesFlowHandler`: a single `user` confirmation step with no data. |
-| `diagnostics.py` | `async_get_config_entry_diagnostics` returns `HaThemesDiagnosticsPayload`. |
+| `__init__.py` | Entry lifecycle: `async_setup_entry` installs the themes, registers the support module and stores `HaAnthropicThemeData`; `async_unload_entry` stops loading the module and clears the repair issues but keeps the theme files; `async_remove_entry` deletes the theme files when the integration is removed. |
+| `theme_installer.py` | `HaAnthropicThemeInstaller` mirrors the packaged `themes/*.yaml` into `<config>/themes/ha_anthropic_theme/`, reloads the frontend themes only when a file changed or a theme is not served yet, and owns the repair issues. |
+| `frontend_module.py` | `HaAnthropicThemeFrontendModule` serves `frontend/ha-anthropic-theme.js` on a static path and adds it with `add_extra_js_url` under a content-hash URL. |
+| `config_flow.py` | `HaAnthropicThemeFlowHandler`: a single `user` confirmation step with no data. |
+| `diagnostics.py` | `async_get_config_entry_diagnostics` returns `HaAnthropicThemeDiagnosticsPayload`. |
 | `const.py` | `LOGGER`, `DOMAIN`, paths, file names and the repair issue ids. |
-| `data/` | `HaThemesData` (`runtime.py`), `HaThemesDiagnosticsPayload` (`diagnostics_payload.py`) and the `HaThemesConfigEntry` alias in `__init__.py`. |
-| `themes/`, `frontend/` | Generated by `scripts/ha-themes build`. |
+| `data/` | `HaAnthropicThemeData` (`runtime.py`), `HaAnthropicThemeDiagnosticsPayload` (`diagnostics_payload.py`) and the `HaAnthropicThemeConfigEntry` alias in `__init__.py`. |
+| `themes/`, `frontend/` | Generated by `scripts/ha-anthropic-theme build`. |
 | `translations/`, `brand/` | Locales and brand assets. |
 
 ## File organization
@@ -93,8 +96,8 @@ Assistant developer documentation and update this file in the same change.
   dataclasses.** Multiple semantically related classes get grouped into a package
   directory with one class per submodule and an `__init__.py` re-exporting the public
   symbols.
-  - Example: `data/` contains `runtime.py` (`HaThemesData`) and
-    `diagnostics_payload.py` (`HaThemesDiagnosticsPayload`), plus an `__init__.py`
+  - Example: `data/` contains `runtime.py` (`HaAnthropicThemeData`) and
+    `diagnostics_payload.py` (`HaAnthropicThemeDiagnosticsPayload`), plus an `__init__.py`
     that re-exports them. A new shared TypedDict or dataclass gets its own file
     there — a flat multi-class `data.py` is not a valid layout.
   - **Relaxations**: a TypedDict or `type` alias consumed by a single module
@@ -103,10 +106,10 @@ Assistant developer documentation and update this file in the same change.
     module. The package-with-one-class-per-submodule layout remains the
     default the moment a shape is shared across modules.
 - **`type` aliases are the exception: they live in `data/__init__.py`**
-  alongside the re-exports (`HaThemesConfigEntry`), not in their own files.
+  alongside the re-exports (`HaAnthropicThemeConfigEntry`), not in their own files.
 - **Helper functions** may live in the same file as the single class that uses
   them; prefer private methods or `@staticmethod`s on that class
-  (`HaThemesThemeInstaller._read_packaged_theme_names`).
+  (`HaAnthropicThemeInstaller._read_packaged_theme_names`).
 - **`__init__.py` of the integration package** holds only the entry lifecycle
   hooks Home Assistant calls (`async_setup_entry`, `async_unload_entry`,
   `async_remove_entry`) and delegates the work to the classes above.
@@ -118,16 +121,16 @@ The integration ships no entity platform. If one is ever added:
 - **One class per entity.** Never share a generic class parameterized by an
   `EntityDescription` subclass with callable fields like `value_fn`; encode the
   behaviour in the entity's own class via `@property` and class-level `_attr_*`
-  constants. Name it `HaThemes<Name><Platform>`.
+  constants. Name it `HaAnthropicTheme<Name><Platform>`.
 - **Entity icons live in `icons.json`**
   (`entity.<platform>.<translation_key>.default`), not in `_attr_icon`.
 - Entity names go under `entity.<platform>.<key>.name` in the translations.
 
 ## Naming
 
-- Public classes are prefixed with `HaThemes` and end with what they are:
-  `HaThemesThemeInstaller`, `HaThemesFrontendModule`, `HaThemesFlowHandler`,
-  `HaThemesData`, `HaThemesDiagnosticsPayload`.
+- Public classes are prefixed with `HaAnthropicTheme` and end with what they are:
+  `HaAnthropicThemeInstaller`, `HaAnthropicThemeFrontendModule`, `HaAnthropicThemeFlowHandler`,
+  `HaAnthropicThemeData`, `HaAnthropicThemeDiagnosticsPayload`.
 - Exception classes end with `Error`. The integration defines none: setup
   failures raise Home Assistant's `ConfigEntryError` with a translation key.
 - Private attributes / functions are prefixed with `_`.
@@ -142,13 +145,13 @@ Banned: `typing.Any`, `object` as a value type, bare `dict` / `list` / `tuple` /
 
 Required:
 
-- `TypedDict` for known dict / JSON shapes (`HaThemesDiagnosticsPayload` in
+- `TypedDict` for known dict / JSON shapes (`HaAnthropicThemeDiagnosticsPayload` in
   `data/diagnostics_payload.py`).
-- `@dataclass` for structured records (`HaThemesData` in `data/runtime.py`).
-- Named `type` aliases for shared shapes — `HaThemesConfigEntry` in
+- `@dataclass` for structured records (`HaAnthropicThemeData` in `data/runtime.py`).
+- Named `type` aliases for shared shapes — `HaAnthropicThemeConfigEntry` in
   `data/__init__.py`.
 - `frozenset[str]` / `tuple[str, ...]` for fixed string collections
-  (`HaThemesThemeInstaller.loaded_themes`, `installed_themes`).
+  (`HaAnthropicThemeInstaller.loaded_themes`, `installed_themes`).
 - `HassKey[T]` for any value kept in `hass.data`, so reads and writes are typed.
 - `cast("TypedDictName", value)` at HA framework boundaries that hand us a
   permissive type (e.g. `entry.data` is `MappingProxyType[str, Any]`).
@@ -162,7 +165,7 @@ unavoidable, give it the error code and a one-line comment explaining why.
 
 - **Always prefer `@property`** over assigning `_attr_*` values in `__init__`.
   Properties are computed lazily from backing fields
-  (`HaThemesThemeInstaller.target_directory`, `HaThemesFrontendModule.url`).
+  (`HaAnthropicThemeInstaller.target_directory`, `HaAnthropicThemeFrontendModule.url`).
 - When the body of `__init__` would only call `super().__init__(...)`, omit
   `__init__` entirely and let Python inherit the parent.
 - Class-level constants like `VERSION = 1` on the config flow are fine — they
@@ -183,7 +186,7 @@ unavoidable, give it the error code and a one-line comment explaining why.
   if TYPE_CHECKING:
       from homeassistant.core import HomeAssistant
 
-      from .data import HaThemesConfigEntry
+      from .data import HaAnthropicThemeConfigEntry
   ```
 
 - `noqa` comments are reserved for unavoidable framework constraints (e.g.
@@ -247,7 +250,7 @@ unavoidable, give it the error code and a one-line comment explaining why.
 
 ## Runtime data and `hass.data`
 
-- Per-entry state lives in `entry.runtime_data: HaThemesData` (`data/runtime.py`):
+- Per-entry state lives in `entry.runtime_data: HaAnthropicThemeData` (`data/runtime.py`):
   the theme installer, the frontend module and the installed theme names.
   `runtime_data` is discarded on unload; the legacy `hass.data[DOMAIN][entry_id]`
   pattern is not, so it is never used.
@@ -257,7 +260,7 @@ unavoidable, give it the error code and a one-line comment explaining why.
   is process-wide state that outlives any config entry and must survive a reload.
   Do not "fix" it into `runtime_data`, and do not add other `hass.data` state.
 - Reading another integration's documented `hass.data` key is fine
-  (`HaThemesThemeInstaller.loaded_themes` reads the frontend's `DATA_THEMES`).
+  (`HaAnthropicThemeInstaller.loaded_themes` reads the frontend's `DATA_THEMES`).
 
 ## Config flow, repair issues and diagnostics
 
@@ -266,13 +269,13 @@ unavoidable, give it the error code and a one-line comment explaining why.
   `manifest.json` makes Home Assistant abort a second flow with
   `single_instance_allowed`. There is nothing to configure, so there is no options
   flow, reauth or reconfigure step.
-- Repair issues are raised by `HaThemesThemeInstaller` through
+- Repair issues are raised by `HaAnthropicThemeInstaller` through
   `homeassistant.helpers.issue_registry`, with ids from `const.py`
   (`ISSUE_THEMES_NOT_LOADED`, `ISSUE_THEMES_RELOAD_FAILED`) used as their
   translation keys. They are not fixable, so there is no `repairs.py` or fix flow:
   the description tells the user what to change. The installer re-checks them on
   every `EVENT_THEMES_UPDATED` and clears them on unload and removal.
-- `diagnostics.py` returns `HaThemesDiagnosticsPayload`: installed and loaded
+- `diagnostics.py` returns `HaAnthropicThemeDiagnosticsPayload`: installed and loaded
   themes, the themes directory and the support module URL. None of it is
   sensitive, so nothing is redacted. A sensitive field added later goes through
   `async_redact_data` with a `TO_REDACT: frozenset[str]` constant.
@@ -312,7 +315,7 @@ the [Home Assistant Marketplace](https://contributors.home-assistant.io/marketpl
   integrations** (omit it in core integrations only) and must parse as
   `AwesomeVersion` — CalVer or SemVer.
 - `manifest.json` also declares `integration_type`. JSON carries no comments,
-  so the choice is recorded here: `ha_themes` ships `service` because its single
+  so the choice is recorded here: `ha_anthropic_theme` ships `service` because its single
   config entry represents a frontend service rather than a device or a hub.
 - `hacs.json` at the repo root pins the minimum HA core via the
   `homeassistant` key. This is one of the four HA pins (see
@@ -320,17 +323,19 @@ the [Home Assistant Marketplace](https://contributors.home-assistant.io/marketpl
 - `hacs.json` takes an optional `country` key — one ISO 3166-1 alpha-2 code or
   a list of them (`"country": ["BR"]`). A HACS user who sets a country in the
   HACS options stops seeing repositories tagged for other countries, while
-  untagged repositories stay visible to everyone. `ha_themes` omits the key
-  because themes are not tied to a country, so its prose stays English. A
+  untagged repositories stay visible to everyone. `ha_anthropic_theme` omits the
+  key because themes are not tied to a country, so its prose stays English. A
   repository sets it only when the device or service exists in specific
   countries, and prefers the list form so adding a country is a one-line diff.
-- Brand assets live under `custom_components/ha_themes/brand/`: `icon.svg` is the
-  source, built on the Fluent Emoji artist palette (see CONTRIBUTING.md → Brand assets), `icon.png` (256×256)
-  and `icon@2x.png` (512×512) are square renders of it, and `logo.png` /
-  `dark_logo.png` (256×128) with their `@2x` (512×256) variants put the icon beside the
-  "HA Themes" wordmark for light and dark backgrounds, all on a transparent background.
-  `tests/test_brand.py` checks the sizes and fails while `icon.svg` is still the placeholder the
-  repository started from.
+- Brand assets live under `custom_components/ha_anthropic_theme/brand/` (see
+  CONTRIBUTING.md → Brand assets). `icon.svg` (the Anthropic symbol) and `logo.svg` (the
+  Anthropic wordmark) are the sources, drawn in `#141413`. `icon.png` (256×256) and
+  `logo.png` (1140×128, trimmed to the wordmark) are renders of them for light
+  backgrounds; `dark_icon.png` and `dark_logo.png` render them with the fill swapped to
+  `#faf9f5` for dark backgrounds. Each has an `@2x` variant at twice the size, all on a
+  transparent background. `tests/test_brand.py` checks the sizes, the transparency and
+  that the dark variants are light, and fails while `icon.svg` is still the placeholder
+  the repository started from.
 - A `README.md` at the repo root is required; HACS and the Home Assistant Marketplace show
   it as the integration's page. Its header follows the layout below.
 
@@ -377,7 +382,7 @@ public.
 
 ## Quality scale
 
-- `quality_scale.yaml` is **optional** and `ha_themes` does not ship one. It
+- `quality_scale.yaml` is **optional** and `ha_anthropic_theme` does not ship one. It
   is required only when `manifest.json` declares a `quality_scale` tier — and
   then every claim in it must be honest (`done` only when the rule is actually
   implemented; use `todo`/`exempt` otherwise).

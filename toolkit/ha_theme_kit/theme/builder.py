@@ -28,9 +28,9 @@ from ha_theme_kit.theme.semantic_layer import build_semantic_colors
 from ha_theme_kit.theme.toast_colors import build_toast_colors
 
 FONT_STYLESHEET_KEY = "stylesheet"
-FONT_STYLESHEET_TOKEN = "ha-themes-font-stylesheet"
+FONT_STYLESHEET_TOKEN = "ha-anthropic-theme-font-stylesheet"
 FONT_SIZE_ADJUST_KEY = "size_adjust"
-FONT_SIZE_ADJUST_TOKEN = "ha-themes-font-size-adjust"
+FONT_SIZE_ADJUST_TOKEN = "ha-anthropic-theme-font-size-adjust"
 TYPOGRAPHY_TOKENS = {
     "body": "ha-font-family-body",
     "heading": "ha-font-family-heading",

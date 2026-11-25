@@ -1,4 +1,4 @@
-"""Diagnostics support for ha_themes."""
+"""Diagnostics support for ha_anthropic_theme."""
 
 from __future__ import annotations
 
@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-    from .data import HaThemesConfigEntry, HaThemesDiagnosticsPayload
+    from .data import HaAnthropicThemeConfigEntry, HaAnthropicThemeDiagnosticsPayload
 
 
 async def async_get_config_entry_diagnostics(
     hass: HomeAssistant,  # noqa: ARG001 -- part of the signature Home Assistant calls
-    entry: HaThemesConfigEntry,
-) -> HaThemesDiagnosticsPayload:
+    entry: HaAnthropicThemeConfigEntry,
+) -> HaAnthropicThemeDiagnosticsPayload:
     """Report which themes are installed and whether the frontend loads them."""
     runtime = entry.runtime_data
     return {

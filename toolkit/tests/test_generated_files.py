@@ -13,7 +13,7 @@ from ha_theme_kit.theme.writer import (
     render_support_module,
 )
 
-REBUILD_HINT = "run `scripts/ha-themes build --strict` and commit the output"
+REBUILD_HINT = "run `scripts/ha-anthropic-theme build --strict` and commit the output"
 THEME_SOURCE_FILES = sorted(THEME_SOURCES.glob("*.yaml"))
 
 
@@ -35,5 +35,5 @@ def test_shipped_theme_matches_its_source(source: Path) -> None:
 def test_shipped_support_module_matches_its_source() -> None:
     rendered = render_support_module()
     assert SUPPORT_MODULE.read_bytes() == rendered.encode(), (
-        f"ha-themes.js is stale: {REBUILD_HINT}"
+        f"ha-anthropic-theme.js is stale: {REBUILD_HINT}"
     )

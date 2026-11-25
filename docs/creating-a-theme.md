@@ -1,7 +1,7 @@
 # Creating a theme
 
 A theme is one YAML file in `themes-src/`. The builder expands it into the full token set
-under `custom_components/ha_themes/themes/<slug>.yaml`, validates every key against the token
+under `custom_components/ha_anthropic_theme/themes/<slug>.yaml`, validates every key against the token
 catalog and checks contrast and color separation. You decide on a palette and a handful of
 roles; the builder derives every other token Home Assistant needs, in both modes.
 
@@ -62,8 +62,8 @@ unique, and `build` stops when two sources would define the same theme.
 ```bash
 cp themes-src/anthropic.yaml themes-src/my-theme.yaml
 # edit themes-src/my-theme.yaml: name: My Theme
-scripts/ha-themes build my-theme --strict
-scripts/ha-themes preview my-theme
+scripts/ha-anthropic-theme build my-theme --strict
+scripts/ha-anthropic-theme preview my-theme
 ```
 
 ## Schema
@@ -170,8 +170,8 @@ lighter. Disabled and inverted colors are exempt.
 Toasts are painted in `ha-color-neutral-10` in both modes, with the loud neutral on-color for the
 message and the normal primary on-color for plain action buttons, both tuned for other
 backdrops. Where either misses the same floor on the toast, the builder writes
-`ha-themes-toast-text-color` (white or `{neutral.05}`, whichever reads) or
-`ha-themes-toast-action-color` (the nearest primary step that reads), and the support module
+`ha-anthropic-theme-toast-text-color` (white or `{neutral.05}`, whichever reads) or
+`ha-anthropic-theme-toast-action-color` (the nearest primary step that reads), and the support module
 paints the toast with them. A theme can set either under `tokens`.
 
 ### References
@@ -211,8 +211,8 @@ section and value named.
 | `shadow` | `shadow-color` | `rgba(0, 0, 0, 0.16)` | `rgba(0, 0, 0, 0.48)` |
 | `input_fill` | `input-fill-color` | `{neutral.95}` | `{neutral.90@0.05}` |
 | `code_background` | `markdown-code-background-color` | `{neutral.95}` | `{neutral.05}` |
-| `brand_icon` | `ha-themes-brand-icon-color` (read by the support module) | `primary` | `primary` |
-| `menu_background` | `ha-themes-menu-background` (read by the support module) | `surface` | `surface` |
+| `brand_icon` | `ha-anthropic-theme-brand-icon-color` (read by the support module) | `primary` | `primary` |
+| `menu_background` | `ha-anthropic-theme-menu-background` (read by the support module) | `surface` | `surface` |
 | `code_editor_background` | `code-editor-background-color` (the code editor, its completion popover and full-screen mode) | `surface` | `surface` |
 | `syntax_comment` | `codemirror-comment` | `{neutral.50}` | `{neutral.60}` |
 | `syntax_keyword` | `codemirror-keyword` | `{primary.30}` | `{primary.60}` |
@@ -228,7 +228,7 @@ section and value named.
 Roles marked "not set" are only written when a theme sets them; otherwise the frontend's derived default applies.
 
 Every token a role writes has a reader: the build fails on a role token that the frontend never
-reads (catalog `consumers` of 0) or, for `ha-themes-*` tokens, that the support module never
+reads (catalog `consumers` of 0) or, for `ha-anthropic-theme-*` tokens, that the support module never
 reads. The frontend's default theme declares several tokens nothing reads
 (`ha-color-text-link`, `ha-color-text-disabled`, `darker-primary-color`, `outline-hover-color`),
 so there is no `link` role: links are drawn in `primary-color`, the `primary` role. Since
@@ -318,12 +318,12 @@ under 3:1 against the card surface are reported but allowed: every chart has a l
 tooltips. Slots 9 to 54 repeat the eight hues at lighter and darker steps; past eight series
 identity is no longer guaranteed, so prefer fewer series per chart.
 
-The order matters as much as the hues. `scripts/ha-themes palette <slug>` ranks the orders that
+The order matters as much as the hues. `scripts/ha-anthropic-theme palette <slug>` ranks the orders that
 keep slot 1 and pass in both modes; pick one and write it into `series`.
 
 ### Validation
 
-`ha-themes build` refuses to run when two sources define the same theme name, since Home
+`ha-anthropic-theme build` refuses to run when two sources define the same theme name, since Home
 Assistant would keep only one of them. It then reports, per theme:
 
 - tokens that do not exist in the captured frontend (typos, or tokens removed upstream), and
@@ -387,7 +387,7 @@ hand-tuned dark status steps, a pinned entity blue), is expressed with roles, pa
 
 ## Shipping a theme
 
-`scripts/ha-themes build` writes every theme family into
-`custom_components/ha_themes/themes/<slug>.yaml` and regenerates the support module in
-`custom_components/ha_themes/frontend/`. Commit both with the source change; the
+`scripts/ha-anthropic-theme build` writes every theme family into
+`custom_components/ha_anthropic_theme/themes/<slug>.yaml` and regenerates the support module in
+`custom_components/ha_anthropic_theme/frontend/`. Commit both with the source change; the
 integration installs them the first time Home Assistant starts after the update.

@@ -22,7 +22,7 @@ FRONTEND_DIRECTORY = Path(__file__).parent / "frontend"
 STATIC_PATH_REGISTERED: HassKey[bool] = HassKey(f"{DOMAIN}_static_path_registered")
 
 
-class HaThemesFrontendModule:
+class HaAnthropicThemeFrontendModule:
     """
     Serves the support module and loads it on every frontend page.
 

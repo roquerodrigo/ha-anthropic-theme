@@ -12,7 +12,7 @@ from playwright.sync_api import Error as PlaywrightError
 
 from ha_theme_kit.theme.writer import SUPPORT_MODULE_SOURCE, render_support_module
 
-ORIGIN = "http://ha-themes.test"
+ORIGIN = "http://ha-anthropic-theme.test"
 CROSS_ORIGIN = "http://cross-origin.test"
 GENERIC_ICON = "/api/brands/integration/generic/icon.png"
 OTHER_GENERIC_ICON = "/api/brands/integration/other_generic/icon.png"
@@ -27,7 +27,8 @@ SETTLE_MILLISECONDS = 300
 WAIT_SECONDS = 5
 
 PAGE_HTML = """<!doctype html>
-<html><head><script type="module" src="/ha-themes.js"></script></head><body></body></html>"""
+<html><head><script type="module" src="/ha-anthropic-theme.js"></script></head>
+<body></body></html>"""
 
 HELPERS = """() => {
 window.addIcon = (id, src, { parent = document.body, shadowHost = false } = {}) => {
@@ -93,7 +94,7 @@ def static_files() -> dict[str, tuple[bytes, str]]:
     generic = png_bytes(GENERIC_ICON_RGB)
     return {
         "/": (PAGE_HTML.encode(), "text/html"),
-        "/ha-themes.js": (render_support_module().encode(), "text/javascript"),
+        "/ha-anthropic-theme.js": (render_support_module().encode(), "text/javascript"),
         GENERIC_ICON: (generic, "image/png"),
         OTHER_GENERIC_ICON: (generic, "image/png"),
         LOGO: (png_bytes(GENERIC_ICON_RGB, (255, 255, 255), (20, 20, 20)), "image/png"),
@@ -163,7 +164,7 @@ def displayed_source(page: Page, element_id: str) -> str:
 def set_root_color(page: Page, color: str) -> None:
     page.evaluate(
         "(color) => window.setVariable(document.documentElement, "
-        "'--ha-themes-brand-icon-color', color)",
+        "'--ha-anthropic-theme-brand-icon-color', color)",
         color,
     )
 
@@ -182,7 +183,7 @@ def test_module_source_is_valid_javascript(tmp_path: Path) -> None:
     node = shutil.which("node")
     if node is None:
         pytest.skip("node is not installed")
-    module = tmp_path / "ha-themes.mjs"
+    module = tmp_path / "ha-anthropic-theme.mjs"
     module.write_text(SUPPORT_MODULE_SOURCE.read_text(encoding="utf-8"), encoding="utf-8")
     result = subprocess.run(
         [node, "--check", str(module)], capture_output=True, text=True, check=False
@@ -203,7 +204,7 @@ def test_module_stays_dormant_without_a_project_variable(
 
     assert attach_shadow_is_native(page)
     assert displayed_source(page, "icon") == f"{ORIGIN}{GENERIC_ICON}"
-    assert page.evaluate("() => document.querySelector('style[data-ha-themes]')") is None
+    assert page.evaluate("() => document.querySelector('style[data-ha-anthropic-theme]')") is None
     assert page_errors == []
 
 
@@ -216,11 +217,11 @@ def test_project_variable_activates_and_clearing_it_restores_the_original(
     wait_for_color(page, "icon", RED)
 
     assert not attach_shadow_is_native(page)
-    assert page.evaluate("() => !!document.querySelector('style[data-ha-themes]')")
+    assert page.evaluate("() => !!document.querySelector('style[data-ha-anthropic-theme]')")
 
-    remove_root_variable(page, "--ha-themes-brand-icon-color")
+    remove_root_variable(page, "--ha-anthropic-theme-brand-icon-color")
     page.wait_for_function(f"() => window.findElement('icon').src === '{ORIGIN}{GENERIC_ICON}'")
-    page.wait_for_function("() => !document.querySelector('style[data-ha-themes]')")
+    page.wait_for_function("() => !document.querySelector('style[data-ha-anthropic-theme]')")
     assert page_errors == []
 
 
@@ -287,7 +288,7 @@ def test_each_themed_subtree_uses_its_own_color(page: Page, page_errors: list[st
           for (const [id, color] of [["global", ""], ["card", "rgb(0, 0, 255)"]]) {{
             const card = document.createElement("div");
             card.id = `${{id}}-card`;
-            if (color) card.style.setProperty("--ha-themes-brand-icon-color", color);
+            if (color) card.style.setProperty("--ha-anthropic-theme-brand-icon-color", color);
             document.body.append(card);
             window.addIcon(id, "{GENERIC_ICON}", {{ parent: card, shadowHost: true }});
           }}
@@ -298,13 +299,14 @@ def test_each_themed_subtree_uses_its_own_color(page: Page, page_errors: list[st
 
     page.evaluate(
         "() => window.findElement('card-card').style"
-        ".setProperty('--ha-themes-brand-icon-color', 'rgb(0, 128, 0)')"
+        ".setProperty('--ha-anthropic-theme-brand-icon-color', 'rgb(0, 128, 0)')"
     )
     wait_for_color(page, "card", GREEN)
     assert page.evaluate("() => window.pixelOf('global')") == list(RED)
 
     page.evaluate(
-        "() => window.findElement('card-card').style.removeProperty('--ha-themes-brand-icon-color')"
+        "() => window.findElement('card-card').style"
+        ".removeProperty('--ha-anthropic-theme-brand-icon-color')"
     )
     wait_for_color(page, "card", RED)
     assert page_errors == []
@@ -319,31 +321,34 @@ def test_body_takes_the_theme_font_and_its_size_adjustment(
     )
     page.evaluate(
         """() => {
-          document.documentElement.style.setProperty("--ha-font-family-body", "Arial");
-          document.documentElement.style.setProperty("--ha-themes-font-size-adjust", "0.5");
+          const root = document.documentElement.style;
+          root.setProperty("--ha-font-family-body", "Arial");
+          root.setProperty("--ha-anthropic-theme-font-size-adjust", "0.5");
         }"""
     )
     set_root_color(page, "rgb(255, 0, 0)")
     page.wait_for_function(f"() => ({body_font})()[0] === 'Arial'")
     assert page.evaluate(body_font) == ["Arial", "0.5"]
 
-    remove_root_variable(page, "--ha-themes-font-size-adjust")
+    remove_root_variable(page, "--ha-anthropic-theme-font-size-adjust")
     assert page.evaluate(body_font) == ["Arial", "none"]
     assert page_errors == []
 
 
 def test_font_stylesheet_follows_the_theme_variable(page: Page, page_errors: list[str]) -> None:
-    links = "() => [...document.head.querySelectorAll('link[data-ha-themes-font-stylesheet]')]"
+    links = (
+        "() => [...document.head.querySelectorAll('link[data-ha-anthropic-theme-font-stylesheet]')]"
+    )
     page.evaluate(
         "(href) => window.setVariable(document.documentElement, "
-        "'--ha-themes-font-stylesheet', `\"${href}\"`)",
+        "'--ha-anthropic-theme-font-stylesheet', `\"${href}\"`)",
         FONT_STYLESHEET,
     )
     page.wait_for_function(f"() => ({links})().length === 1")
     assert page.evaluate(f"() => ({links})()[0].getAttribute('href')") == FONT_STYLESHEET
     assert page.evaluate(f"() => ({links})()[0].rel") == "stylesheet"
 
-    remove_root_variable(page, "--ha-themes-font-stylesheet")
+    remove_root_variable(page, "--ha-anthropic-theme-font-stylesheet")
     page.wait_for_function(f"() => ({links})().length === 0")
     assert page_errors == []
 
@@ -359,7 +364,9 @@ def test_only_the_dashboard_header_paints_the_translucent_header_background(
         """() => {
           const root = document.documentElement.style;
           root.setProperty("--app-header-background-color", "rgb(0, 0, 255)");
-          root.setProperty("--ha-themes-dashboard-header-background", "rgba(255, 0, 0, 0.5)");
+          root.setProperty(
+            "--ha-anthropic-theme-dashboard-header-background", "rgba(255, 0, 0, 0.5)"
+          );
           for (const tag of ["hui-root", "ha-header-bar"]) {
             const host = document.createElement(tag);
             const shadow = host.attachShadow({ mode: "open" });
@@ -377,7 +384,7 @@ def test_only_the_dashboard_header_paints_the_translucent_header_background(
     page.wait_for_function(f"() => ({header_background})('hui-root') === 'rgba(255, 0, 0, 0.5)'")
     assert page.evaluate(header_background, "ha-header-bar") == "rgb(0, 0, 255)"
 
-    remove_root_variable(page, "--ha-themes-dashboard-header-background")
+    remove_root_variable(page, "--ha-anthropic-theme-dashboard-header-background")
     page.wait_for_function(f"() => ({header_background})('hui-root') === 'rgb(0, 0, 255)'")
     assert page_errors == []
 
@@ -388,7 +395,7 @@ def test_dropdown_menus_take_the_theme_menu_background(page: Page, page_errors: 
         """() => {
           const root = document.documentElement.style;
           root.setProperty("--card-background-color", "rgb(0, 0, 255)");
-          root.setProperty("--ha-themes-menu-background", "rgb(255, 0, 0)");
+          root.setProperty("--ha-anthropic-theme-menu-background", "rgb(255, 0, 0)");
           const host = document.createElement("ha-dropdown");
           const shadow = host.attachShadow({ mode: "open" });
           const sheet = new CSSStyleSheet();
@@ -405,7 +412,7 @@ def test_dropdown_menus_take_the_theme_menu_background(page: Page, page_errors: 
     )
     page.wait_for_function(f"() => ({menu_background})() === 'rgb(255, 0, 0)'")
 
-    remove_root_variable(page, "--ha-themes-menu-background")
+    remove_root_variable(page, "--ha-anthropic-theme-menu-background")
     page.wait_for_function(f"() => ({menu_background})() === 'rgb(0, 0, 255)'")
     assert page_errors == []
 
@@ -416,7 +423,9 @@ def test_toasts_take_the_theme_edge(page: Page, page_errors: list[str]) -> None:
         """() => {
           const root = document.documentElement.style;
           root.setProperty("--wa-shadow-l", "rgb(0, 0, 255) 0px 16px 32px 0px");
-          root.setProperty("--ha-themes-toast-box-shadow", "rgb(255, 0, 0) 0px 0px 0px 1px");
+          root.setProperty(
+            "--ha-anthropic-theme-toast-box-shadow", "rgb(255, 0, 0) 0px 0px 0px 1px"
+          );
           const host = document.createElement("ha-toast");
           const shadow = host.attachShadow({ mode: "open" });
           const sheet = new CSSStyleSheet();
@@ -431,7 +440,7 @@ def test_toasts_take_the_theme_edge(page: Page, page_errors: list[str]) -> None:
     )
     page.wait_for_function(f"() => ({toast_shadow})() === 'rgb(255, 0, 0) 0px 0px 0px 1px'")
 
-    remove_root_variable(page, "--ha-themes-toast-box-shadow")
+    remove_root_variable(page, "--ha-anthropic-theme-toast-box-shadow")
     page.wait_for_function(f"() => ({toast_shadow})() === 'rgb(0, 0, 255) 0px 16px 32px 0px'")
     assert page_errors == []
 
@@ -440,7 +449,7 @@ def test_input_chips_take_the_theme_corner_radius(page: Page, page_errors: list[
     chip_radius = "() => getComputedStyle(window.findElement('chip')).borderTopLeftRadius"
     page.evaluate(
         """() => {
-          document.documentElement.style.setProperty("--ha-themes-corner-radius", "8px");
+          document.documentElement.style.setProperty("--ha-anthropic-theme-corner-radius", "8px");
           const host = document.createElement("ha-input-chip");
           const shadow = host.attachShadow({ mode: "open" });
           const sheet = new CSSStyleSheet();
@@ -457,7 +466,7 @@ def test_input_chips_take_the_theme_corner_radius(page: Page, page_errors: list[
     )
     page.wait_for_function(f"() => ({chip_radius})() === '8px'")
 
-    remove_root_variable(page, "--ha-themes-corner-radius")
+    remove_root_variable(page, "--ha-anthropic-theme-corner-radius")
     page.wait_for_function(f"() => ({chip_radius})() === '16px'")
     assert page_errors == []
 
@@ -472,7 +481,7 @@ def test_map_overview_panel_takes_the_theme_menu_background(
         """() => {
           const root = document.documentElement.style;
           root.setProperty("--card-background-color", "rgb(0, 0, 255)");
-          root.setProperty("--ha-themes-menu-background", "rgb(255, 0, 0)");
+          root.setProperty("--ha-anthropic-theme-menu-background", "rgb(255, 0, 0)");
           const host = document.createElement("hui-map-overview");
           const shadow = host.attachShadow({ mode: "open" });
           const sheet = new CSSStyleSheet();
@@ -497,7 +506,7 @@ def test_map_overview_panel_takes_the_theme_menu_background(
         f"() => ({panel_backgrounds})().join() === 'rgb(255, 0, 0),rgb(255, 0, 0),rgb(0, 0, 255)'"
     )
 
-    remove_root_variable(page, "--ha-themes-menu-background")
+    remove_root_variable(page, "--ha-anthropic-theme-menu-background")
     page.wait_for_function(
         f"() => ({panel_backgrounds})().every((color) => color === 'rgb(0, 0, 255)')"
     )
@@ -546,8 +555,9 @@ def test_code_editor_details_and_search_fields_take_the_theme_font(
     )"""
     page.evaluate(
         """() => {
-          document.documentElement.style.setProperty("--ha-font-family-body", "Georgia");
-          document.documentElement.style.setProperty("--ha-themes-brand-icon-color", "red");
+          const root = document.documentElement.style;
+          root.setProperty("--ha-font-family-body", "Georgia");
+          root.setProperty("--ha-anthropic-theme-brand-icon-color", "red");
           const host = document.createElement("ha-code-editor");
           const shadow = host.attachShadow({ mode: "open" });
           const sheet = new CSSStyleSheet();
@@ -575,7 +585,7 @@ def test_code_editor_details_and_search_fields_take_the_theme_font(
 CHART_THEME = """(withProjectTheme) => {
   const root = document.documentElement.style;
   root.setProperty("--ha-font-family-body", "Georgia");
-  if (!withProjectTheme) root.removeProperty("--ha-themes-brand-icon-color");
+  if (!withProjectTheme) root.removeProperty("--ha-anthropic-theme-brand-icon-color");
   const chart = document.createElement("ha-chart-base");
   document.body.append(chart);
   const theme = chart._createTheme(getComputedStyle(chart));
@@ -598,11 +608,12 @@ def test_charts_under_a_project_theme_take_its_body_font(
     page: Page, page_errors: list[str]
 ) -> None:
     page.evaluate(
-        "() => document.documentElement.style.setProperty('--ha-themes-brand-icon-color', 'red')"
+        "() => document.documentElement.style"
+        ".setProperty('--ha-anthropic-theme-brand-icon-color', 'red')"
     )
     define_chart_element(page)
     page.wait_for_function(
-        "() => customElements.get('ha-chart-base').prototype._createTheme.haThemesPatched"
+        "() => customElements.get('ha-chart-base').prototype._createTheme.haAnthropicThemePatched"
     )
     assert page.evaluate(CHART_THEME, True) == "Georgia"
     assert page.evaluate(CHART_THEME, False) == "Roboto, Noto, sans-serif"
@@ -654,8 +665,8 @@ def test_icon_tiles_take_the_entity_color_of_their_hue(page: Page, page_errors: 
           const root = document.documentElement.style;
           root.setProperty("--indigo-color", "#4d5ea2");
           root.setProperty("--amber-color", "#eec876");
-          root.setProperty("--ha-themes-icon-tile-palette-share", "100%");
-          root.setProperty("--ha-themes-icon-tile-max-lightness", "0.6");
+          root.setProperty("--ha-anthropic-theme-icon-tile-palette-share", "100%");
+          root.setProperty("--ha-anthropic-theme-icon-tile-max-lightness", "0.6");
           const navigation = document.createElement("ha-config-navigation-list");
           const navigationShadow = navigation.attachShadow({ mode: "open" });
           const propertyTile = document.createElement("div");
@@ -680,7 +691,10 @@ def test_icon_tiles_take_the_entity_color_of_their_hue(page: Page, page_errors: 
     assert attribute_tile.startswith("oklch(0.6 ")
     assert unknown_tile == "rgb(18, 52, 86)"
 
-    for name in ("--ha-themes-icon-tile-palette-share", "--ha-themes-icon-tile-max-lightness"):
+    for name in (
+        "--ha-anthropic-theme-icon-tile-palette-share",
+        "--ha-anthropic-theme-icon-tile-max-lightness",
+    ):
         remove_root_variable(page, name)
     stock = page.evaluate(
         """() => ['property-tile', 'attribute-tile'].map((id) => {
@@ -704,7 +718,7 @@ def test_icon_tiles_take_the_theme_corner_radius_and_other_circles_stay_round(
         """() => {
           const root = document.documentElement.style;
           root.setProperty("--ha-border-radius-circle", "50%");
-          root.setProperty("--ha-themes-corner-radius", "8px");
+          root.setProperty("--ha-anthropic-theme-corner-radius", "8px");
           root.setProperty("--indigo-color", "#4d5ea2");
           const circle = new CSSStyleSheet();
           circle.replaceSync(".icon-background { border-radius: var(--ha-border-radius-circle); }");
@@ -742,11 +756,11 @@ def test_icon_tiles_take_the_theme_corner_radius_and_other_circles_stay_round(
     search_tile = "getComputedStyle(window.findElement('search-tile')).backgroundColor"
     page.evaluate(
         "() => document.documentElement.style.setProperty("
-        "'--ha-themes-icon-tile-palette-share', '100%')"
+        "'--ha-anthropic-theme-icon-tile-palette-share', '100%')"
     )
     page.wait_for_function(f"() => {search_tile}.startsWith('oklch')")
 
-    remove_root_variable(page, "--ha-themes-corner-radius")
+    remove_root_variable(page, "--ha-anthropic-theme-corner-radius")
     page.wait_for_function(f"() => ({radii})().join() === '50%,50%,50%,50%'")
     assert page_errors == []
 
@@ -756,9 +770,9 @@ STOCK_HOVER_FILL = "150 150 150 255"
 CLEAR_FILL = "0 0 0 0"
 
 FIELD_VARIABLES = {
-    "--ha-themes-field-outline": "1",
-    "--ha-themes-field-border-color": "rgb(255, 0, 0)",
-    "--ha-themes-field-border-radius": "8px",
+    "--ha-anthropic-theme-field-outline": "1",
+    "--ha-anthropic-theme-field-border-color": "rgb(255, 0, 0)",
+    "--ha-anthropic-theme-field-border-radius": "8px",
 }
 
 ADD_FIELDS = """() => {
@@ -896,7 +910,7 @@ def test_form_fields_take_an_outline_instead_of_the_underline(
         "underline": "0",
     }
 
-    remove_root_variable(page, "--ha-themes-field-outline")
+    remove_root_variable(page, "--ha-anthropic-theme-field-outline")
     page.wait_for_function(f"() => ({FIELD_STYLES})('{element_id}').underline === '1'")
     assert field_styles(page, element_id)["width"] == "0px"
     assert field_styles(page, element_id)["fill"] == STOCK_FILL

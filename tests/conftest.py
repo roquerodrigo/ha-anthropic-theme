@@ -6,7 +6,7 @@ import pytest
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant.common import MockConfigEntry
 
-from custom_components.ha_themes.const import DOMAIN
+from custom_components.ha_anthropic_theme.const import DOMAIN
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -31,7 +31,7 @@ async def frontend(hass: HomeAssistant, config_directory: Path) -> None:
 
 @pytest.fixture
 async def setup_integration(hass: HomeAssistant, frontend: None) -> MockConfigEntry:
-    entry = MockConfigEntry(domain=DOMAIN, data={}, title="HA Themes")
+    entry = MockConfigEntry(domain=DOMAIN, data={}, title="Anthropic Theme")
     entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
